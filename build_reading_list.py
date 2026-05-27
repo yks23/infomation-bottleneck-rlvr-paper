@@ -12,11 +12,10 @@ from pathlib import Path
 from textwrap import shorten
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-METADATA_DIR = REPO_ROOT / "data" / "metadata"
-OUT_DIR = REPO_ROOT / "data"
-NOTES_DIR = REPO_ROOT / "notes"
-QUERY_FILE = NOTES_DIR / "query_rlvr_information_bottleneck.txt"
+ROOT = Path(__file__).resolve().parents[2]
+METADATA_DIR = ROOT / "dev" / "metadata"
+OUT_DIR = Path(__file__).resolve().parent
+QUERY_FILE = ROOT / "dev" / "query_rlvr_information_bottleneck.txt"
 
 TOKEN_RE = re.compile(r"[a-zA-Z][a-zA-Z0-9_+-]{2,}")
 STOPWORDS = {
@@ -260,7 +259,7 @@ def write_markdown(records: list[dict]) -> None:
         "```",
         "",
     ])
-    (NOTES_DIR / "rlvr_reading_list.md").write_text("\n".join(lines), encoding="utf-8")
+    (OUT_DIR / "README.md").write_text("\n".join(lines), encoding="utf-8")
 
 
 def main() -> None:

@@ -32,15 +32,13 @@
 *.vrb
 *.xdv
 
-# Generated PDFs are reproducible from source.
-*.pdf
-!notes/**/*.pdf
-
-# Local build/output directories
+# Generated paper output
+main.pdf
 build/
 out/
+
+# Downloaded external PDFs
 pdfs/
-data/pdfs/
 
 # Python caches and local environments
 __pycache__/

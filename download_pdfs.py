@@ -12,8 +12,7 @@ from pathlib import Path
 import openreview
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = REPO_ROOT / "data"
+HERE = Path(__file__).resolve().parent
 
 
 def sanitize_title(title: str) -> str:
@@ -24,7 +23,7 @@ def sanitize_title(title: str) -> str:
 
 def load_records() -> list[dict]:
     records = []
-    with (DATA_DIR / "papers.jsonl").open(encoding="utf-8") as f:
+    with (HERE / "papers.jsonl").open(encoding="utf-8") as f:
         for line in f:
             if line.strip():
                 records.append(json.loads(line))
@@ -50,7 +49,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--rank", type=int, action="append", default=[])
     parser.add_argument("--all", action="store_true")
-    parser.add_argument("--out-dir", type=Path, default=REPO_ROOT / "data" / "pdfs")
+    parser.add_argument("--out-dir", type=Path, default=HERE / "pdfs")
     args = parser.parse_args()
 
     if not args.all and not args.rank:

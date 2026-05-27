@@ -83,6 +83,19 @@ From the covariance view, this means AlphaZero-like training attempts to maintai
 \]
 The terminal reward is sparse, but it is repeatedly queried at the frontier of the current policy's competence. This is exactly the regime where $p(1-p)$ is large.
 
+\subsection{Connect Four Evidence}
+
+We tested this distinction in two rounds of Connect Four experiments. The results support the view that AlphaZero-like self-play is fundamentally different from fixed-dataset \rlvr{}. With a fixed prompt or verifier source, improvement eventually pushes many examples into all-correct or all-wrong regimes, where the binary verifier carries little local contrast. In self-play, by contrast, the opponent and the position distribution co-evolve with the current policy. The training data therefore keeps moving toward the model's competence boundary. Even though the reward remains only a terminal $0/1$ outcome, self-play can sustain substantial outcome variance and act as a renewable source of verifier feedback.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.86\linewidth]{figures/openspiel_c4_mean_win_rate_by_condition.pdf}
+  \caption{Connect Four evaluation under different training conditions. Self-play renews the opponent and state distribution as the policy changes, whereas fixed or noisy sources can increase update magnitude without necessarily improving external performance.}
+  \label{fig:connect-four-self-play}
+\end{figure}
+
+The experiments also show why reward variance, outcome entropy, or parameter-update norm should not be identified directly with usable information. Fixed opponents and noisy opponent actions can produce larger gradient norms and parameter updates, but this does not by itself improve external evaluation. Larger updates may reflect distributional instability or target drift rather than stronger learning. Reward-noise results point in the same direction: small or moderate terminal noise can be tolerable in the OpenSpiel setting and may even have a mild regularizing effect, while higher noise in a separate value-fitting experiment clearly degrades learning. Noise variance itself is therefore not information. Only reward variation aligned with policy-controllable differences among trajectories can become an effective training signal.
+
 \subsection{Implications for the RLVR Bottleneck}
 
 AlphaZero-like self-play suggests a useful baseline for thinking about information bottlenecks:
