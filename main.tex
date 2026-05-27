@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlist{leftmargin=1.6em,itemsep=0.2em,topsep=0.2em}
+\emergencystretch=2em
+
+\newcommand{\rlvr}{\textsc{RLVR}}
+\newcommand{\rl}{\textsc{RL}}
+\newcommand{\llm}{\textsc{LLM}}
+\newcommand{\vr}{\textsc{VR}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\logit}{\mathrm{logit}}
+
+\newtcolorbox{discussionbox}[1][]{
+  colback=gray!5,
+  colframe=black!35,
+  title={Discussion},
+  fonttitle=\bfseries,
+  boxrule=0.5pt,
+  arc=1mm,
+  left=0.8em,
+  right=0.8em,
+  top=0.6em,
+  bottom=0.6em,
+  #1
+}
+
+\title{Verifiable Rewards as an Information Bottleneck}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Reinforcement learning with verifiable rewards has become a central recipe for improving reasoning and generation models because its feedback is cheap, objective, and nearly unbiased in domains with deterministic checkers. This paper studies the opposite side of this trade-off: verifiable rewards are reliable precisely because they compress rich trajectories into extremely low-bandwidth outcome signals. We formulate verifiable-reward learning as an information bottleneck, introduce metrics for dataset-level feedback budget, realized reward information, update strength, and information utilization, and analyze the resulting bottlenecks across AlphaZero-like self-play, \llm{} \rlvr{}, and diffusion-model \rlvr{}.
+\end{abstract}
+
+\input{sections/01_introduction}
+\input{sections/01b_related_work}
+\input{sections/02_formulation}
+\input{sections/03_reward_models}
+\input{sections/04_traditional_rl}
+\input{sections/05_llm_rlvr}
+\input{sections/06_three_variable_dynamics}
+\input{sections/07_diffusion_rlvr}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

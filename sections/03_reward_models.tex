@@ -1,0 +1,311 @@
+\section{Reward-Model Bias, Variance, and Multi-Objective Feedback}
+
+The previous section defined reward-information mass from the variance of reward-model outputs under the rollout distribution. This section separates three related but distinct issues: whether the reward model is biased, whether its evaluations are noisy, and whether the task is better described by multiple reward channels rather than a single scalar.
+
+\subsection{Bias and Evaluator Variance}
+
+Let $U^\star(x,\tau)$ denote the target utility that we would like the policy to optimize. This may be final correctness, human preference, game outcome, visual quality, safety, or any task-specific objective. A reward model $\mathsf{R}_\psi$ is an evaluator of the sampled rollout. If the evaluator is stochastic, we write
+\[
+  R \sim \mathsf{R}_\psi(\cdot\mid x,\tau),
+  \qquad
+  \mu_\psi(x,\tau)=\E[R\mid x,\tau].
+\]
+The reward-model bias and evaluator variance are
+\[
+  b_\psi(x,\tau)=\mu_\psi(x,\tau)-U^\star(x,\tau),
+  \qquad
+  \sigma_\psi^2(x,\tau)=\Var[R\mid x,\tau].
+\]
+A deterministic verifier is the special case where $\sigma_\psi^2(x,\tau)=0$. When the verifier exactly matches the task specification, its bias with respect to the specified outcome is also zero. This is the main appeal of verifiable rewards: they can be low-bias and low-noise evaluators.
+
+However, low evaluator bias is different from high training signal. Under the rollout distribution, the reward random variable has the decomposition
+\[
+  \Var_{\tau\sim q_\theta,\,R\sim \mathsf{R}_\psi}
+  [R\mid x]
+  =
+  \Var_{\tau\sim q_\theta}
+  [\mu_\psi(x,\tau)\mid x]
+  +
+  \E_{\tau\sim q_\theta}
+  [\sigma_\psi^2(x,\tau)\mid x].
+\]
+The first term is rollout-induced reward variation: it reflects whether different sampled trajectories receive different expected evaluations. The second term is evaluator noise: it can increase observed reward variance without necessarily adding useful directional signal. Thus a high-variance reward channel is not automatically informative; the variance must align with policy-controllable differences among rollouts.
+
+\subsection{Bias of the Policy Update}
+
+The reward-model gradient induced by the evaluator mean is
+\[
+  g_\psi(x)
+  =
+  \Cov_{\tau\sim q_\theta(\cdot\mid x)}
+  \left(
+    \mu_\psi(x,\tau),
+    s_\theta(x,\tau)
+  \right),
+  \qquad
+  s_\theta(x,\tau)=\nabla_\theta \log q_\theta(\tau\mid x).
+\]
+The ideal gradient for the target utility is
+\[
+  g^\star(x)
+  =
+  \Cov_{\tau\sim q_\theta(\cdot\mid x)}
+  \left(
+    U^\star(x,\tau),
+    s_\theta(x,\tau)
+  \right).
+\]
+Their difference is
+\[
+  g_\psi(x)-g^\star(x)
+  =
+  \Cov_{\tau\sim q_\theta(\cdot\mid x)}
+  \left(
+    b_\psi(x,\tau),
+    s_\theta(x,\tau)
+  \right).
+\]
+Therefore reward-model bias matters only through its covariance with controllable rollout directions. A biased reward model is especially harmful when its bias is systematically aligned with high-probability policy changes. Conversely, a reward model may contain pointwise bias that is less damaging if the bias is nearly constant over the rollouts reachable by the current policy, because constant offsets do not affect policy-gradient covariance.
+
+This motivates an update-alignment measure:
+\[
+  \mathrm{Align}_\theta(x)
+  =
+  \frac{
+    \langle g_\psi(x),g^\star(x)\rangle
+  }{
+    \|g_\psi(x)\|_2\|g^\star(x)\|_2+\epsilon
+  }.
+\]
+The reward-information mass from Section~2 measures how much reward-side variation is exposed, while update alignment measures whether that variation points in the desired direction.
+
+\subsection{Variance of the Gradient Estimator}
+
+For a group of $K$ sampled rollouts, a generic centered estimator has the form
+\[
+  \widehat g(x)
+  =
+  \frac{1}{K}\sum_{j=1}^K
+  (R_j-\bar R)s_j.
+\]
+Its estimator variance depends not only on rollout diversity, but also on evaluator noise. If the evaluator noise is conditionally independent given $(x,\tau)$, then the second-moment contribution contains the term
+\[
+  \E_{\tau\sim q_\theta(\cdot\mid x)}
+  \left[
+    \sigma_\psi^2(x,\tau)
+    s_\theta(x,\tau)s_\theta(x,\tau)^\top
+  \right].
+\]
+This term increases gradient-estimator variance without changing the expected update direction. Thus the usual bias--variance trade-off for reward models should be refined into a three-way trade-off:
+\[
+  \text{reward bias}
+  \quad
+  \text{vs.}
+  \quad
+  \text{evaluator noise}
+  \quad
+  \text{vs.}
+  \quad
+  \text{feedback bandwidth}.
+\]
+
+\begin{discussionbox}[title={Discussion: Verifiers and learned reward models}]
+Verifiable rewards occupy one corner of this trade-off. They are often low-bias and low-noise with respect to a precise task specification, but they may have extremely low feedback bandwidth, especially when they return only a terminal binary outcome. Learned reward models can provide dense scalar feedback and increase rollout-induced reward variance, but they may introduce bias, evaluator noise, and reward hacking. From this perspective, the question is not whether verifiers or reward models are universally better. The question is how much usable update signal each evaluator provides per unit of bias and noise.
+\end{discussionbox}
+
+\subsection{Two Sources of Multiple Rewards}
+
+Multiple rewards arise in two different ways. First, the same task may be evaluated by several reward models. Second, a training dataset may contain different tasks, each with its own reward. Both cases turn policy optimization into a scalarization of multiple objectives, but they have different sources of variance and conflict.
+
+\paragraph{Same task, different rewards.}
+For a fixed task $x$, one rollout may be evaluated by several reward channels. A reasoning model may need correctness, brevity, safety, and format compliance. A diffusion model may need aesthetics, prompt alignment, object count, identity preservation, physical consistency, and safety. We write this form as
+\[
+  \mathbf{R}_\psi(x,\tau)
+  =
+  \left(
+    R_\psi^{(1)}(x,\tau),\ldots,R_\psi^{(m)}(x,\tau)
+  \right)^\top
+  \in \mathbb{R}^m.
+\]
+Given a scalarization weight vector $w\in\mathbb{R}^m$, the scalar reward is
+\[
+  R_w(x,\tau)=w^\top \mathbf{R}_\psi(x,\tau).
+\]
+The local reward variance under this scalarization is
+\[
+  \mathcal{V}_\theta^w(x)
+  =
+  \Var_{\tau\sim q_\theta(\cdot\mid x)}
+  [w^\top \mathbf{R}_\psi(x,\tau)]
+  =
+  w^\top
+  \Sigma_\theta^R(x)
+  w,
+\]
+where
+\[
+  \Sigma_\theta^R(x)
+  =
+  \Cov_{\tau\sim q_\theta(\cdot\mid x)}
+  \left(
+    \mathbf{R}_\psi(x,\tau)
+  \right)
+\]
+is the reward covariance matrix across sampled rollouts.
+
+The scalarized global reward-information mass is therefore
+\[
+  \mathcal{I}_{\mathrm{train}}^w
+  =
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)
+  \E_{x\sim\mathcal{D}}
+  \left[
+    w^\top \Sigma_{\theta(t)}^R(x)w
+  \right]
+  dt.
+\]
+If the scalarization is not fixed in advance, the more primitive object is the matrix-valued reward-information mass
+\[
+  \mathbf{I}_{\mathrm{train}}^{R}
+  =
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)
+  \E_{x\sim\mathcal{D}}
+  \left[
+    \Sigma_{\theta(t)}^R(x)
+  \right]
+  dt.
+\]
+This matrix records how much reward variation is available along each objective and how much the objectives co-vary over sampled rollouts. Its trace measures total marginal reward variance, while its spectrum reveals whether the reward signal is concentrated in a few redundant directions or spread across many independent objectives.
+
+Multi-objective feedback also has an update-space view. Define
+\[
+  G_\theta(x)
+  =
+  \Cov_{\tau\sim q_\theta(\cdot\mid x)}
+  \left(
+    \mathbf{R}_\psi(x,\tau),
+    s_\theta(x,\tau)
+  \right)
+  \in \mathbb{R}^{m\times d},
+\]
+whose $k$-th row is the policy-gradient direction induced by objective $k$. For scalarization $w$, the update is
+\[
+  g_w(x)=G_\theta(x)^\top w.
+\]
+Objective conflict can be studied through the update Gram matrix
+\[
+  C_\theta(x)=G_\theta(x)G_\theta(x)^\top,
+\]
+where $C_{\theta,ij}(x)=\langle g_i(x),g_j(x)\rangle$ measures whether objectives $i$ and $j$ push the policy in compatible or competing directions. This distinguishes two cases that scalar reward variance alone cannot separate: multiple objectives may provide independent information but still agree in update space, or they may expose rich information while inducing conflicting policy updates.
+
+\paragraph{Different tasks, different rewards.}
+A second source of multiple rewards is the dataset itself. Suppose a dataset is a mixture of tasks,
+\[
+  \mathcal{D}=\sum_{k=1}^m \rho_k \mathcal{D}_k,
+  \qquad
+  \sum_{k=1}^m \rho_k=1,
+\]
+where task family $k$ has reward model $\mathsf{R}_{\psi_k}^{(k)}$. The training objective is a scalarized multi-task objective:
+\[
+  J(\theta)
+  =
+  \sum_{k=1}^m \rho_k
+  \E_{x\sim \mathcal{D}_k}
+  \E_{\tau\sim q_\theta(\cdot\mid x)}
+  \left[
+    \mathsf{R}_{\psi_k}^{(k)}(x,\tau)
+  \right].
+\]
+The task-level gradient is
+\[
+  g_k(\theta)
+  =
+  \E_{x\sim \mathcal{D}_k}
+  \Cov_{\tau\sim q_\theta(\cdot\mid x)}
+  \left(
+    \mathsf{R}_{\psi_k}^{(k)}(x,\tau),
+    s_\theta(x,\tau)
+  \right),
+\]
+and the dataset update is the weighted sum
+\[
+  g_{\mathcal{D}}(\theta)=\sum_{k=1}^m \rho_k g_k(\theta).
+\]
+This is the sense in which \llm{} \rlvr{} on a dataset is often multi-objective: even if every prompt has only one binary verifier, different prompts or task families define different local objectives whose gradients may agree, interfere, or dominate one another.
+
+The same reward-information view applies at the task level:
+\[
+  \mathcal{I}_{\mathrm{train}}^{(k)}
+  =
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)\,
+  \E_{x\sim\mathcal{D}_k}
+  \left[
+    \Var_{\tau\sim q_{\theta(t)}(\cdot\mid x)}
+    \big[
+      \mathsf{R}_{\psi_k}^{(k)}(x,\tau)
+    \big]
+  \right]
+  dt.
+\]
+The scalar dataset-level mass is $\sum_k \rho_k \mathcal{I}_{\mathrm{train}}^{(k)}$, but this scalar can hide imbalance: a small subset of tasks may dominate the reward variance and update strength, while other tasks consume rollouts but produce near-zero local signal.
+
+For a finite dataset $\mathcal{D}=\{x_i\}_{i=1}^N$, it is often useful to work with the unnormalized total information budget rather than the dataset average. Define the per-example reward-information mass as
+\[
+  \mathcal{I}_i
+  =
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)\,
+  \Var_{\tau\sim q_{\theta(t)}(\cdot\mid x_i)}
+  \left[
+    \mathsf{R}_{\psi_i}^{(i)}(x_i,\tau)
+  \right]
+  dt,
+\]
+where $\mathsf{R}_{\psi_i}^{(i)}$ denotes the reward model or verifier associated with example $x_i$. The dataset total reward-information mass is
+\[
+  \mathcal{I}_{\mathcal{D}}^{\mathrm{tot}}
+  =
+  \sum_{i=1}^N \mathcal{I}_i.
+\]
+If every example has per-example mass bounded by $I_{\max}$, then
+\[
+  \mathcal{I}_{\mathcal{D}}^{\mathrm{tot}}
+  \le
+  N I_{\max}.
+\]
+For binary rewards, a crude universal bound is
+\[
+  \mathcal{I}_i
+  \le
+  \frac{1}{4}
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)\,dt,
+  \qquad
+  \mathcal{I}_{\mathcal{D}}^{\mathrm{tot}}
+  \le
+  \frac{N}{4}
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)\,dt.
+\]
+This scaling makes explicit that fixed-dataset \llm{} \rlvr{} has a finite verifier-information budget that grows at most linearly with the number of examples, before accounting for redundancy and gradient conflict across tasks.
+
+\begin{discussionbox}[title={Claim to prove: subadditivity across task sets}]
+The total dataset mass above is an additive bookkeeping quantity. For usable information, however, two task sets trained through a shared rollout model and shared parameter updates may not preserve all information available from each set in isolation. In the terminology of this paper, we will formalize this cross-task interference as a subadditivity statement, e.g.
+\[
+  \mathcal{I}_{A\cup B}^{\mathrm{usable}}
+  \le
+  \mathcal{I}_{A}^{\mathrm{usable}}
+  +
+  \mathcal{I}_{B}^{\mathrm{usable}}.
+\]
+Strict inequality may arise from redundant reward variance, shared rollout budget, finite update bandwidth, and conflicting task gradients. This is the dataset-level sense in which the union of tasks may contain less usable reward information than the sum of separately measured task information.
+\end{discussionbox}
+
+\begin{discussionbox}[title={Discussion: Dataset RL as multi-objective RL}]
+In fixed-dataset \llm{} \rlvr{}, it is useful to view each prompt, benchmark, or task family as an objective. The usual dataset average is a scalarization chosen by the data mixture. This scalarization may look innocuous, but it determines which reward signals dominate training. Easy prompts can have low variance because all rollouts are correct; impossible prompts can have low variance because all rollouts are wrong; medium-difficulty prompts can dominate the effective update. Thus the multi-objective problem is not only about different reward heads, but also about how a dataset allocates update bandwidth across many local objectives.
+\end{discussionbox}
+
+In the rest of the paper, this bias--variance--multi-objective view will be used to compare three regimes. Traditional games often have low-bias outcome rewards but can generate new rollouts through environment interaction. \llm{} \rlvr{} often has a fixed prompt-verifier source, so the main issue is exposing and converting a bounded reward-variance budget. Diffusion \rlvr{} often has long generation trajectories and naturally multi-objective reward models, so its main issue is assigning dense, low-bias, multi-objective feedback to intermediate denoising decisions.

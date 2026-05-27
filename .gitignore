@@ -1,0 +1,53 @@
+# macOS
+.DS_Store
+
+# LaTeX build products
+*.acn
+*.acr
+*.alg
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.dvi
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# Generated PDFs are reproducible from source.
+*.pdf
+!notes/**/*.pdf
+
+# Local build/output directories
+build/
+out/
+pdfs/
+data/pdfs/
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor/project local state
+.idea/
+.vscode/

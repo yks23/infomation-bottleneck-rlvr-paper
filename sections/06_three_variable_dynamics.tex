@@ -1,0 +1,311 @@
+\section{Single-Question LLM RLVR Dynamics}
+
+The previous section described fixed-dataset \llm{} \rlvr{} as a non-renewable verifier source. The atomic unit of that source is a single question or prompt. We therefore first give the one-question case its own compact empirical dynamics. This is not meant to be the general theory for all \rlvr{} settings, nor even the full dataset-level theory for \llm{} \rlvr{}. It is a falsifiable base model for a fixed prompt with a binary verifier, especially single-question runs where success rate, action entropy, and cumulative reward-information mass are all observable. The model uses only three observed quantities:
+\[
+  I_t
+  \quad
+  A_t
+  \quad
+  p_t,
+\]
+where $p_t$ is the rollout success rate, $A_t$ is the average per-token action entropy, and $I_t$ is the cumulative reward-information mass observed up to training step $t$.
+
+This section should be read as the \llm{}-specific bridge between the covariance/variance formulation and single-question experiments. If the model fits observed curves better than reward variance alone, then action entropy is not merely a side diagnostic. It is part of the prompt-level \llm{} bottleneck itself. Dataset-level \llm{} dynamics can then be treated as a mixture of many such one-question systems, with allocation, interference, and task imbalance layered on top. After deriving regime-specific dynamics for self-play, \llm{} \rlvr{}, and diffusion-model \rlvr{}, we can abstract a common theory.
+
+\subsection{Observed State Variables}
+
+For a fixed problem $x$, define
+\[
+  p_t
+  =
+  \Pr_{\tau\sim q_{\theta_t}(\cdot\mid x)}
+  [V(x,\tau)=1],
+\]
+estimated by the success rate of rollouts at step $t$. Let
+\[
+  A_t
+  =
+  \E_{\tau\sim q_{\theta_t}(\cdot\mid x)}
+  \left[
+    \frac{1}{|\tau|}
+    \sum_{\ell=1}^{|\tau|}
+    H\big(\pi_{\theta_t}(\cdot\mid h_\ell)\big)
+  \right]
+\]
+be the average per-token action entropy along sampled rollouts, where $h_\ell$ is the generation history before token $\ell$. Finally, let
+\[
+  I_t
+  =
+  \sum_{n<t}
+  \alpha_n \widehat{\mathcal{V}}_n(x)
+\]
+be the cumulative observed information mass, with increment
+\[
+  \Delta I_t=I_{t+1}-I_t.
+\]
+
+Here $\widehat{\mathcal{V}}_n(x)$ is the empirical version of the local reward variance defined in Section~2:
+\[
+  \mathcal{V}_{\theta_n}(x)
+  =
+  \Var_{\tau\sim q_{\theta_n}(\cdot\mid x)}
+  [V(x,\tau)].
+\]
+For a binary verifier,
+\[
+  \mathcal{V}_{\theta_t}(x)
+  =
+  p_t(1-p_t).
+\]
+We will use the normalized reward variance
+\[
+  \overline{\mathcal{V}}_t(x)
+  =
+  4\mathcal{V}_{\theta_t}(x)
+  =
+  4p_t(1-p_t)
+  \in[0,1].
+\]
+This differs from the raw Bernoulli variance only by a constant factor. The normalization is convenient because $\overline{\mathcal{V}}_t(x)=1$ at the maximally mixed success rate $p_t=1/2$. Thus $p_t$ is not a replacement for the paper's variance notation; it is the binary-verifier parameterization of $\mathcal{V}_{\theta_t}(x)$.
+
+\subsection{A Two-Sided Action-Entropy Bottleneck}
+
+Action entropy affects learning in two opposite ways. If $A_t$ is too small, the model does not explore enough distinct rollouts and the verifier sees little contrast. If $A_t$ is too large, credit assignment becomes diluted across a large action space: even when the verifier observes success and failure, the update may be spread over too many weakly identified token choices.
+
+We model this trade-off with a two-sided bottleneck function
+\[
+  B(A_t)
+  =
+  \left(1-\exp\left(-\frac{A_t}{A_{\mathrm{exp}}}\right)\right)
+  \exp\left(-\frac{A_t}{A_{\mathrm{credit}}}\right).
+\]
+The first factor is an exploration gate. It is small when action entropy is too low. The second factor is a credit-assignment penalty. It is small when action entropy is too high. Therefore $B(A)$ is inverted-U shaped.
+
+The entropy level that maximizes this bottleneck is
+\[
+  A^\star
+  =
+  A_{\mathrm{exp}}
+  \log\left(1+\frac{A_{\mathrm{credit}}}{A_{\mathrm{exp}}}\right).
+\]
+This gives a concrete prediction: useful verifier-information extraction should concentrate near an intermediate action entropy, rather than increasing monotonically with entropy.
+
+\subsection{Three-Variable Dynamics}
+
+We propose the following closed dynamical system:
+\[
+  \Delta I_t
+  =
+  \kappa\,
+  \overline{\mathcal{V}}_t(x)\,
+  B(A_t)\,
+  \left(1-\frac{I_t}{I_\infty}\right)_+,
+\]
+\[
+  \Delta \logit(p_t)
+  =
+  \eta
+  \frac{\Delta I_t}{(A_t+\epsilon)^\rho},
+\]
+\[
+  \Delta A_t
+  =
+  -\beta\,\Delta I_t\,A_t
+  +
+  \xi\,\overline{\mathcal{V}}_t(x)(A_{\mathrm{mix}}-A_t),
+\]
+where $(u)_+=\max(u,0)$. The positive-part operator is a modeling safeguard: once the fitted cumulative information reaches the problem-specific ceiling $I_\infty$, the remaining-information term should not become negative.
+
+The parameters have the following interpretation:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Parameter & Meaning \\
+\midrule
+$\kappa$ & information extraction rate \\
+$I_\infty$ & total learnable information for this problem \\
+$\eta$ & conversion rate from extracted information to success \\
+$\rho$ & credit concentration exponent \\
+$\beta$ & entropy-collapse rate caused by learning \\
+$\xi$ & entropy re-mixing strength in mixed success/failure regimes \\
+$A_{\mathrm{exp}}$ & entropy scale needed for exploration \\
+$A_{\mathrm{credit}}$ & entropy scale where credit assignment becomes diluted \\
+$A_{\mathrm{mix}}$ & mixed or exploratory entropy attractor \\
+$\epsilon$ & numerical stabilizer \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Information increment.}
+The first equation says that information extraction requires three simultaneous conditions:
+\[
+  \overline{\mathcal{V}}_t(x)>0,\qquad B(A_t)>0,\qquad I_t<I_\infty.
+\]
+The model predicts
+\[
+  \Delta I_t\to 0
+  \quad\text{when}\quad
+  p_t\to 0,\; p_t\to 1,\; A_t\to 0,\; A_t\to\infty,\; \text{or}\; I_t\to I_\infty.
+\]
+Thus a verifier can be unbiased and still produce little information if the policy is always wrong, always correct, too deterministic, too diffuse, or has already exhausted the learnable information for that problem.
+
+\paragraph{Success-rate improvement.}
+The second equation links extracted information to success:
+\[
+  \Delta \logit(p_t)
+  =
+  \eta
+  \frac{\Delta I_t}{(A_t+\epsilon)^\rho}.
+\]
+The logit scale is used because it separates additive progress from probability saturation near $0$ and $1$. For fitting, $p_t$ should be clipped to $[\epsilon_p,1-\epsilon_p]$ before taking logits. The denominator captures credit concentration: given the same $\Delta I_t$, lower action entropy can produce a larger success-rate gain because probability mass is concentrated on fewer actions. This does not mean lower entropy is always better, because the first equation already makes $\Delta I_t$ small when $A_t$ is too low.
+
+\paragraph{Action-entropy dynamics.}
+The third equation contains two forces:
+\[
+  -\beta\,\Delta I_t\,A_t
+\]
+models entropy collapse caused by decisive learning, while
+\[
+  \xi\,\overline{\mathcal{V}}_t(x)(A_{\mathrm{mix}}-A_t)
+\]
+models re-mixing when the model is in a mixed success/failure regime. This allows non-monotone entropy curves: entropy can decrease during decisive learning, temporarily increase near a difficult boundary, and flatten after the problem is solved or fully failed.
+
+\begin{discussionbox}[title={Discussion: Why include action entropy?}]
+The fixed-dataset theory in the previous section would suggest that $\mathcal{V}_{\theta_t}(x)$ is the main local source of verifier information for one prompt. The three-variable model tests whether this is sufficient in single-question \llm{} training. If $\Delta I_t$ is better explained by $\overline{\mathcal{V}}_t(x)B(A_t)$ than by $\overline{\mathcal{V}}_t(x)$ alone, then action entropy is not just a proxy for exploration. It is a measurable bottleneck that controls how much verifier information can be exposed and converted into updates.
+\end{discussionbox}
+
+\subsection{Reduced Model for First Experiments}
+
+The full three-equation system may be too flexible for a first pass. A simpler first test keeps only the information and success equations:
+\[
+  \Delta I_t
+  =
+  \kappa\,
+  \overline{\mathcal{V}}_t(x)\,
+  B(A_t)\,
+  \left(1-\frac{I_t}{I_\infty}\right)_+,
+\]
+\[
+  \Delta \logit(p_t)
+  =
+  \eta
+  \frac{\Delta I_t}{(A_t+\epsilon)^\rho}.
+\]
+The entropy curve can then be fit separately by
+\[
+  A_{t+1}
+  =
+  A_t-\beta\,\Delta I_t\,A_t,
+\]
+or equivalently,
+\[
+  \Delta \log A_t
+  \approx
+  -\beta\,\Delta I_t
+\]
+during decisive learning phases. This reduced form is likely the most robust first empirical test because it avoids over-attributing short-term entropy fluctuations to the re-mixing term.
+
+\subsection{Empirical Tests}
+
+The model gives several direct tests on single-question curves.
+
+\paragraph{Test 1: inverted-U action bottleneck.}
+Compute
+\[
+  Y_t=\frac{\Delta I_t}{\overline{\mathcal{V}}_t(x)+\epsilon_v}.
+\]
+If the bottleneck hypothesis is correct, $Y_t$ should be low when $A_t$ is very small, high at intermediate $A_t$, and lower again when $A_t$ is very large. A monotone relationship would argue against the proposed two-sided bottleneck.
+
+\paragraph{Test 2: information-to-success conversion.}
+Fit
+\[
+  \Delta \logit(p_t)
+  =
+  \eta
+  \frac{\Delta I_t}{(A_t+\epsilon)^\rho}.
+\]
+Equivalently,
+\[
+  \frac{\Delta \logit(p_t)}{\Delta I_t+\epsilon_I}
+  \propto
+  (A_t+\epsilon)^{-\rho}.
+\]
+The prediction is that, conditional on the same extracted information, lower action entropy yields larger success-rate gain.
+
+\paragraph{Test 3: entropy collapse with information.}
+Fit
+\[
+  \Delta A_t
+  =
+  -\beta\,\Delta I_t\,A_t
+\]
+or
+\[
+  \Delta \log A_t
+  =
+  -\beta\,\Delta I_t.
+\]
+The prediction is that $\log A_t$ should be approximately linear in $I_t$ during decisive learning phases.
+
+\paragraph{Test 4: finite information ceiling.}
+The first equation predicts that
+\[
+  I_t\to I_\infty
+\]
+when the problem is learnable and reaches a solved regime. Thus $\Delta I_t$ should decay as $I_t$ approaches a problem-specific ceiling. However, if a problem remains in a persistent mixed regime, with $p_t$ away from $0$ and $1$ and $A_t$ near $A^\star$, then $\Delta I_t$ may remain positive for a long time. Such cases are especially valuable because they test whether the finite-information assumption is wrong, or whether the fitted $I_\infty$ is much larger than the observed training horizon.
+
+\subsection{Practical Fitting Protocol}
+
+For each completed single-question run, we can fit the model as follows:
+\begin{enumerate}
+  \item Smooth $p_t$, $A_t$, and $I_t$ lightly if the curves are noisy.
+  \item Compute $\Delta I_t=I_{t+1}-I_t$, $\Delta z_t=\logit(p_{t+1})-\logit(p_t)$, and $\overline{\mathcal{V}}_t=4p_t(1-p_t)$.
+  \item Fit the information equation
+  \[
+    \Delta I_t
+    \sim
+    \overline{\mathcal{V}}_t B(A_t)\left(1-\frac{I_t}{I_\infty}\right)_+.
+  \]
+  \item Fit the success equation
+  \[
+    \Delta z_t
+    \sim
+    \frac{\Delta I_t}{(A_t+\epsilon)^\rho}.
+  \]
+  \item Fit the entropy equation
+  \[
+    \Delta A_t
+    \sim
+    -\Delta I_t A_t + \overline{\mathcal{V}}_t(A_{\mathrm{mix}}-A_t).
+  \]
+\end{enumerate}
+
+The key empirical comparison is between the one-factor model
+\[
+  \Delta I_t\sim \overline{\mathcal{V}}_t(x)
+\]
+and the full bottleneck model
+\[
+  \Delta I_t
+  \sim
+  \overline{\mathcal{V}}_t(x)B(A_t)\left(1-\frac{I_t}{I_\infty}\right)_+.
+\]
+If the full model gives a significantly better fit, then the one-question bottleneck is not only a property of success variance. It also depends on action entropy and remaining learnable information.
+
+\subsection{Reading Three-Line Curves}
+
+The model suggests the following interpretation of the three observed curves:
+\begin{center}
+\begin{tabular}{p{0.19\linewidth}p{0.36\linewidth}p{0.34\linewidth}}
+\toprule
+Regime & Curve pattern & Interpretation \\
+\midrule
+Dead exploration & $p_t$ near $0$, $I_t$ flat, $A_t$ high & No reward signal is converted. \\
+Effective learning & $p_t$ rising, $I_t$ rising, $A_t$ falling & Information extraction with entropy collapse. \\
+Solved state & $p_t$ near $1$, $I_t$ flat, $A_t$ low & Verifier information is exhausted. \\
+Mixed boundary & $p_t$ unstable, $I_t$ rising, $A_t$ non-monotone & Useful test of finite ceiling. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This gives a compact experimental agenda. The simplest hypothesis is that verifier information is controlled only by success variance. The stronger bottleneck hypothesis is that success variance, action entropy, and remaining cumulative information form a coupled system. The difference is measurable from the curves themselves.

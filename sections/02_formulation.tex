@@ -1,0 +1,221 @@
+\section{Problem Formulation}
+
+This section defines the objects used throughout the paper and introduces two quantities that will be used to analyze reward-model-driven learning: local update strength and global reward-information mass. The key object is not a reward attached directly to a state, but a reward obtained by first sampling rollouts from the current model and then evaluating those rollouts with a reward model.
+
+\subsection{Models, Rollouts, and Rewards}
+
+A standard reinforcement learning problem can be written as a Markov decision process
+\[
+  \mathcal{M}=(\mathcal{S},\mathcal{A},P,\rho_0,\gamma),
+\]
+where $\mathcal{S}$ is the state space, $\mathcal{A}$ is the action space, $P(s'\mid s,a)$ is the environment transition model, $\rho_0$ is the initial-state distribution, and $\gamma$ is the discount factor. A policy $\pi_\theta(a\mid s)$, together with the environment dynamics, induces a rollout distribution
+\[
+  \tau \sim q_\theta(\cdot),
+  \qquad
+  \tau=(s_0,a_0,s_1,a_1,\ldots).
+\]
+A reward model then maps the sampled rollout to a scalar reward,
+\[
+  R = \mathsf{R}_\psi(\tau).
+\]
+In classical \rl{}, $\mathsf{R}_\psi$ may simply be the hand-designed return functional
+\[
+  \mathsf{R}_\psi(\tau)=G(\tau)=\sum_{t\ge 0}\gamma^t r(s_t,a_t,s_{t+1}).
+\]
+In learned-reward settings, $\mathsf{R}_\psi$ may be a trained reward model. In verifiable-reward settings, $\mathsf{R}_\psi$ is a deterministic or nearly deterministic verifier.
+
+For \llm{} and diffusion-model \rlvr{}, we use the conditional version of the same setup. A task or prompt $x\sim \mathcal{D}$ is the initial condition, the rollout model induces a trajectory distribution
+\[
+  \tau \sim q_\theta(\cdot\mid x),
+\]
+and the reward model evaluates the sampled trajectory:
+\[
+  R=\mathsf{R}_\psi(x,\tau).
+\]
+Here $\tau$ may be a reasoning trace, a program-generation trajectory, a game trajectory, an image-generation trajectory, or a denoising path. A binary verifier is the special case
+\[
+  \mathsf{R}_\psi(x,\tau)=V(x,\tau)\in\{0,1\}.
+\]
+Thus the reward is a random variable because the rollout is sampled from the current model distribution, even when the reward model itself is deterministic.
+
+The conditional objective is
+\[
+  J(\theta)
+  =
+  \E_{x\sim \mathcal{D}}
+  \E_{\tau\sim q_\theta(\cdot\mid x)}
+  \left[
+    \mathsf{R}_\psi(x,\tau)
+  \right].
+\]
+Optional regularizers such as KL penalties to a reference model can be added to this objective, but the central question studied here concerns the information carried by the reward signal produced by $\mathsf{R}_\psi$ under the rollout distribution $q_\theta$.
+
+\subsection{Local Update Strength}
+
+Fix a prompt or initial condition $x$. Let
+\[
+  s_\theta(x,\tau)=\nabla_\theta \log q_\theta(\tau\mid x)
+\]
+be the score vector of the sampled rollout. In autoregressive \llm{} policies, this score decomposes into token log-probability gradients. In classical \rl{}, environment transitions independent of $\theta$ vanish from the score, leaving the usual sum of action log-probability gradients. In diffusion or flow models, $s_\theta$ is the score of the sampled denoising or generation trajectory.
+
+The prompt-level policy-gradient contribution is
+\[
+  g_\theta(x)
+  =
+  \nabla_\theta
+  \E_{\tau\sim q_\theta(\cdot\mid x)}
+  [\mathsf{R}_\psi(x,\tau)].
+\]
+Using the score-function identity,
+\[
+  g_\theta(x)
+  =
+  \E_{\tau\sim q_\theta(\cdot\mid x)}
+  \left[
+    \mathsf{R}_\psi(x,\tau)s_\theta(x,\tau)
+  \right].
+\]
+Since $\E_{\tau\sim q_\theta(\cdot\mid x)}[s_\theta(x,\tau)]=0$ under the usual support assumptions, this can be written as a covariance:
+\[
+  g_\theta(x)
+  =
+  \Cov_{\tau\sim q_\theta(\cdot\mid x)}
+  \left(
+    \mathsf{R}_\psi(x,\tau),\,
+    s_\theta(x,\tau)
+  \right).
+\]
+Thus the local update is strong only when reward variation across rollouts aligns with directions in model probability space. A reward model can be unbiased or even exactly verifiable, but if all rollouts around $x$ receive the same reward, this local covariance vanishes.
+
+We define the local update strength as
+\[
+  \mathcal{U}_\theta(x)=\|g_\theta(x)\|_2^2.
+\]
+This quantity separates two factors: the reward-side variation exposed by rollout sampling and the policy-side sensitivity of those sampled rollouts. By Cauchy--Schwarz,
+\[
+  \mathcal{U}_\theta(x)
+  \le
+  \Var_{\tau\sim q_\theta(\cdot\mid x)}
+  [\mathsf{R}_\psi(x,\tau)]
+  \cdot
+  \E_{\tau\sim q_\theta(\cdot\mid x)}
+  \left[
+    \left\|s_\theta(x,\tau)\right\|_2^2
+  \right].
+\]
+The reward variance under the rollout model is therefore an upper-level proxy for whether a prompt can produce a nontrivial policy update at all. For a binary verifier, if
+\[
+  p_\theta(x)=\Pr_{\tau\sim q_\theta(\cdot\mid x)}[V(x,\tau)=1],
+\]
+then
+\[
+  \Var[V(x,\tau)\mid x]=p_\theta(x)(1-p_\theta(x)).
+\]
+This term is zero when the rollout model is always wrong or always correct on $x$, and maximal when $p_\theta(x)=1/2$.
+
+We will use the following shorthand for this local reward-side signal:
+\[
+  \mathcal{V}_\theta(x)
+  =
+  \Var_{\tau\sim q_\theta(\cdot\mid x)}
+  \big[\mathsf{R}_\psi(x,\tau)\big].
+\]
+This is the local variance of reward-model outputs under the current rollout distribution. Its accumulation over training will define the global reward-information mass below.
+
+This covariance view also gives a compact interpretation of group-relative policy optimization. For a prompt $x$, sample a group $\{\tau_j\}_{j=1}^K$ from the rollout model and write
+\[
+  r_j=\mathsf{R}_\psi(x,\tau_j),\qquad
+  s_j=s_\theta(x,\tau_j),\qquad
+  \bar r=\frac{1}{K}\sum_{j=1}^K r_j.
+\]
+Ignoring clipping, KL regularization, and reward-standard-deviation normalization, the group-centered policy-gradient estimator is
+\[
+  \widehat g_{\mathrm{GRPO}}(x)
+  =
+  \frac{1}{K}\sum_{j=1}^K (r_j-\bar r)s_j.
+\]
+Since $\sum_j(r_j-\bar r)=0$, this is exactly the empirical covariance between reward-model outputs and rollout scores:
+\[
+  \widehat g_{\mathrm{GRPO}}(x)
+  =
+  \frac{1}{K}\sum_{j=1}^K
+  (r_j-\bar r)(s_j-\bar s)
+  =
+  \widehat{\Cov}_{K}(r,s\mid x),
+  \qquad
+  \bar s=\frac{1}{K}\sum_{j=1}^K s_j.
+\]
+With reward normalization, the same covariance direction is rescaled by the empirical reward standard deviation. With clipping and KL penalties, this covariance update is further constrained by the trust-region-like optimization geometry. The basic point remains: in group-relative \rlvr{}, useful local learning signal is the covariance between reward-model evaluations and model-score directions over sampled rollouts.
+
+\subsection{Global Reward-Information Mass}
+
+Local update strength describes whether one prompt can produce an update at a particular policy. We also need a global quantity that tracks how much reward-side learning signal is exposed over the entire training run.
+
+Let $\theta(t)$ denote the rollout model along a continuous-time training trajectory, let $\alpha(t)$ denote the learning rate (or update-size schedule), and let $T_{\mathrm{train}}$ be the end of training. We define the global reward-information mass as the learning-rate-weighted integral of local reward variance from the beginning to the end of training:
+\[
+  \mathcal{I}_{\mathrm{train}}
+  =
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)\,
+  \E_{x\sim \mathcal{D}}
+  \left[
+    \Var_{\tau\sim q_{\theta(t)}(\cdot\mid x)}
+    \big[
+      \mathsf{R}_\psi(x,\tau)
+    \big]
+  \right]
+  dt.
+\]
+Equivalently, using the shorthand above,
+\[
+  \mathcal{I}_{\mathrm{train}}
+  =
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)\,
+  \E_{x\sim \mathcal{D}}
+  \left[
+    \mathcal{V}_{\theta(t)}(x)
+  \right]
+  dt.
+\]
+For a finite prompt dataset $\mathcal{D}=\{x_i\}_{i=1}^N$ and a binary verifier, this becomes
+\[
+  \mathcal{I}_{\mathrm{train}}
+  =
+  \int_0^{T_{\mathrm{train}}}
+  \alpha(t)\,
+  \frac{1}{N}\sum_{i=1}^N
+  p_t(x_i)(1-p_t(x_i))
+  dt,
+  \qquad
+  p_t(x_i)=\Pr_{\tau\sim q_{\theta(t)}(\cdot\mid x_i)}[V(x_i,\tau)=1].
+\]
+In discrete training with batches $\mathcal{B}_t$, this quantity is estimated by
+\[
+  \widehat{\mathcal{I}}_{0:T}
+  =
+  \sum_{t=0}^{T-1}
+  \alpha_t\,
+  \frac{1}{|\mathcal{B}_t|}
+  \sum_{x_i\in \mathcal{B}_t}
+  \widehat{\Var}\left(
+    r_{i,1},\ldots,r_{i,K}
+  \right),
+\]
+where $r_{i,j}=\mathsf{R}_\psi(x_i,\tau_{i,j})$ is the reward-model output for the $j$-th rollout of prompt $x_i$.
+
+This definition is not meant to be a full Shannon mutual information between the reward model and the parameters. Rather, it is an optimization-facing measure of reward-side information that can be converted into policy updates. It intentionally weights local reward dispersion by the update size: reward variance observed when the optimizer takes no step contributes little to learning, while variance observed under a larger update budget contributes more.
+
+\begin{discussionbox}[title={Discussion: Why variance rather than entropy?}]
+One could instead measure the entropy of reward-model outputs, e.g. $H(\mathsf{R}_\psi(x,\tau))$. We use variance because the quantity is meant to describe optimization-relevant signal, not only uncertainty of the reward symbol. Entropy loses reward scale: replacing a scalar reward $R$ by $cR$ leaves the discrete outcome entropy unchanged whenever the support labels are unchanged, but it scales the policy-gradient covariance and the update magnitude by $c$. Variance is shift-invariant and scale-sensitive, matching the fact that policy-gradient updates depend on reward differences. For binary rewards, both $H(\mathrm{Bernoulli}(p))$ and $p(1-p)$ vanish at $p\in\{0,1\}$ and peak at $p=1/2$, but variance extends naturally to scalar or dense rewards where the numerical gaps between rollout outcomes directly affect learning strength. Thus $\int \alpha(t)\E_x[\Var_{\tau\sim q_{\theta(t)}}(\mathsf{R}_\psi(x,\tau)\mid x)]dt$ should be read as reward-variance mass, an optimizer-facing proxy for usable reward-model information.
+\end{discussionbox}
+
+The definition also makes explicit why fixed-dataset \llm{} \rlvr{} is different from open-ended environment interaction. With deterministic verifiers and a fixed prompt set, the reward model is fixed; training changes $q_{\theta(t)}(\tau\mid x)$ and therefore changes which rewards are exposed, but it does not create new ground-truth reward labels outside the dataset-verifier system. For binary rewards,
+\[
+  0
+  \le
+  \mathcal{I}_{\mathrm{train}}
+  \le
+  \frac{1}{4}\int_0^{T_{\mathrm{train}}} \alpha(t)\,dt.
+\]
+Thus the central algorithmic question is how to expose and convert this bounded reward-information mass efficiently. Rollout diversification can move prompts away from zero-variance regions, adaptive allocation can spend reward-model queries where $p_t(x)(1-p_t(x))$ is high, and dense or trajectory-level rewards can replace a low-bandwidth terminal signal with higher-bandwidth intermediate feedback.

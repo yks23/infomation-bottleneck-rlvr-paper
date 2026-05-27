@@ -1,0 +1,151 @@
+\section{Fixed-Dataset LLM RLVR: A Non-Renewable Verifier Source}
+
+We now turn to \llm{} \rlvr{} on a fixed prompt dataset. This is the regime where the information bottleneck is sharpest. The verifier can be nearly unbiased: a mathematical answer is correct or incorrect, a program passes or fails tests, and a formal proof is accepted or rejected by a checker. Yet the source of verifier feedback is not renewable in the AlphaZero-like sense. The prompt set and its verifiers are fixed before training, and training only changes which rollouts are sampled from this fixed source.
+
+\subsection{Prompt-Level Bernoulli Feedback}
+
+Let the dataset be
+\[
+  \mathcal{D}=\{x_i\}_{i=1}^N,
+\]
+where each prompt $x_i$ has a deterministic binary verifier
+\[
+  V_i(\tau)\in\{0,1\}.
+\]
+At training time $t$, the model samples a response trajectory
+\[
+  \tau\sim q_{\theta(t)}(\cdot\mid x_i),
+\]
+and the verifier success probability is
+\[
+  p_i(t)
+  =
+  \Pr_{\tau\sim q_{\theta(t)}(\cdot\mid x_i)}
+  [V_i(\tau)=1].
+\]
+The local reward variance is therefore
+\[
+  \mathcal{V}_i(t)
+  =
+  \Var_{\tau\sim q_{\theta(t)}(\cdot\mid x_i)}
+  [V_i(\tau)]
+  =
+  p_i(t)(1-p_i(t)).
+\]
+This is maximized only when $p_i(t)=1/2$. If the model always fails a prompt, $p_i(t)\approx 0$ and the verifier gives no local contrast. If the model always solves a prompt, $p_i(t)\approx 1$ and the verifier again gives no local contrast. Thus a fixed prompt contributes useful binary verifier information only while it sits near the current model's decision boundary.
+
+The contrast with self-play is immediate. In AlphaZero-like self-play, the task distribution moves with the learner, so the outcome can remain close to half win and half loss. In fixed-dataset \llm{} \rlvr{}, the prompts do not automatically move. As the model improves, many prompts leave the high-variance region and become all-correct; prompts that are too hard may remain all-wrong. The effective learning signal concentrates on the subset of prompts with intermediate success probability.
+
+\subsection{Group-Relative Updates and Zero-Variance Groups}
+
+Most \llm{} \rlvr{} pipelines do not observe the full Bernoulli distribution for a prompt. They sample a finite group of $K$ rollouts:
+\[
+  \tau_{i,1},\ldots,\tau_{i,K}
+  \sim
+  q_{\theta(t)}(\cdot\mid x_i),
+  \qquad
+  r_{i,j}=V_i(\tau_{i,j}).
+\]
+The group-centered reward variance is
+\[
+  \widehat{\mathcal{V}}_{i,K}(t)
+  =
+  \frac{1}{K}
+  \sum_{j=1}^K
+  (r_{i,j}-\bar r_i)^2.
+\]
+For Bernoulli verifier rewards,
+\[
+  \E[\widehat{\mathcal{V}}_{i,K}(t)]
+  =
+  \frac{K-1}{K}
+  p_i(t)(1-p_i(t)).
+\]
+A group-relative method such as GRPO receives a nontrivial advantage signal only when the sampled group contains both successes and failures. The probability of this mixed-reward event is
+\[
+  P_{\mathrm{mixed}}(i,t)
+  =
+  1-p_i(t)^K-(1-p_i(t))^K.
+\]
+When $p_i(t)$ is close to $0$ or $1$, the group is very likely to be all-zero or all-one, and the centered verifier signal vanishes. This gives a concrete operational meaning to the bottleneck: a prompt can still be meaningful, and its verifier can still be unbiased, while the sampled group provides no policy-gradient contrast.
+
+\subsection{The Fixed Source Budget}
+
+For a finite training run with update steps $n=1,\ldots,S$, learning rates $\alpha_n$, prompt sampling weights $a_{i,n}$, and $K_{i,n}$ rollouts per selected prompt, the realized empirical verifier-information mass is
+\[
+  \widehat{\mathcal{I}}_{\llm}
+  =
+  \sum_{n=1}^{S}
+  \alpha_n
+  \sum_{i=1}^{N}
+  a_{i,n}
+  \widehat{\mathcal{V}}_{i,K_{i,n}}(n).
+\]
+Because verifier rewards are binary,
+\[
+  \widehat{\mathcal{V}}_{i,K_{i,n}}(n)\le \frac{1}{4},
+\]
+and therefore
+\[
+  \widehat{\mathcal{I}}_{\llm}
+  \le
+  \frac{1}{4}
+  \sum_{n=1}^{S}
+  \alpha_n
+  \sum_{i=1}^{N}
+  a_{i,n}.
+\]
+If each step samples from a normalized prompt distribution, $\sum_i a_{i,n}=1$, then
+\[
+  \widehat{\mathcal{I}}_{\llm}
+  \le
+  \frac{1}{4}
+  \sum_{n=1}^{S}\alpha_n.
+\]
+If one counts the unnormalized dataset total, the corresponding bound is
+\[
+  \widehat{\mathcal{I}}_{\mathcal{D}}^{\mathrm{tot}}
+  \le
+  \frac{N}{4}
+  \sum_{n=1}^{S}\alpha_n.
+\]
+Thus, for a fixed dataset, fixed verifier family, fixed rollout budget, and fixed update schedule, the maximum binary verifier-information mass is fixed before training begins. The algorithm can change how much of this ceiling is actually realized, but it cannot make the source itself renewable. This is the sense in which \llm{} \rlvr{} has a fixed verifier-information budget on a given dataset.
+
+\begin{discussionbox}[title={Discussion: Fixed does not mean fully used}]
+The fixed-source statement is not that every algorithm extracts the same amount of useful information. Most algorithms extract only a fraction of the available verifier-information mass. Some waste rollouts on already-solved prompts, some sample near-identical trajectories, and some allocate updates to verifier variance that is poorly aligned with useful reasoning changes. The point is that, unlike self-play, the dataset-verifier source does not automatically create new high-variance tasks as the model improves. Improvements must come from better allocation, better exploration, denser feedback, or adding new data.
+\end{discussionbox}
+
+\subsection{Why the Signal Saturates}
+
+The prompt-level picture suggests a simple phase diagram:
+\[
+  p_i(t)\approx 0
+  \quad\Rightarrow\quad
+  \text{all failures, no contrast},
+\]
+\[
+  p_i(t)\approx \frac{1}{2}
+  \quad\Rightarrow\quad
+  \text{mixed outcomes, strong contrast},
+\]
+\[
+  p_i(t)\approx 1
+  \quad\Rightarrow\quad
+  \text{all successes, no contrast}.
+\]
+Training is most efficient when many prompts lie in the middle regime. However, a fixed dataset does not keep prompts there. As competence increases, easy prompts move into the all-success region. If the remaining prompts are too hard, they may stay in the all-failure region. The total effective verifier signal can therefore peak early and then decay, even though the verifier remains correct.
+
+This view also clarifies why several recent \rlvr{} interventions are useful. Rollout-diversification methods try to increase the chance that a group contains genuinely different trajectories, raising $P_{\mathrm{mixed}}$ near the decision boundary \cite{lookahead_rollouts_2026,eepo_2026}. Entropy or advantage-shaping methods try to prevent useful prompts from being discarded merely because their sampled group has zero variance \cite{exploration_exploitation_rlvr_2026,no_prompt_left_behind_2026}. Hybrid reward methods add dense or graded feedback so that rollouts can differ even when the terminal verifier is identical \cite{hybrid_reinforcement_2026}. In the language of this paper, these methods do not primarily make the verifier less biased; they increase the effective bandwidth between the fixed verifier source and the optimizer.
+
+\subsection{Algorithmic Consequences}
+
+Fixed-dataset \llm{} \rlvr{} should therefore be evaluated by how efficiently it uses its verifier source. The most direct quantities are:
+\begin{enumerate}
+  \item \textbf{Exposed verifier variance.} How much of $\sum_i p_i(t)(1-p_i(t))$ is actually sampled under the rollout budget?
+  \item \textbf{Mixed-group rate.} What fraction of prompt groups contain both successes and failures?
+  \item \textbf{Update conversion.} How much covariance between verifier rewards and rollout scores survives clipping, KL regularization, and reward normalization?
+  \item \textbf{Prompt allocation.} Are updates spent on prompts near the decision boundary, or wasted on all-correct and all-wrong groups?
+  \item \textbf{Dataset refresh.} Does the system introduce new prompts, harder variants, self-generated tasks, or curriculum mechanisms that renew the high-variance frontier?
+\end{enumerate}
+
+The central contrast is now clear. AlphaZero-like self-play can keep a binary terminal reward useful because the environment distribution is adaptive and self-renewing. Fixed-dataset \llm{} \rlvr{} starts from a fixed collection of verifier-defined objectives. Its core problem is not only sparse credit assignment, but also the depletion and misallocation of a finite verifier-information source.
