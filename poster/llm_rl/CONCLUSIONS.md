@@ -13,6 +13,9 @@ A_i = sum_t H_i(t) <= T_i
 In the 40-prompt run, the realized cumulative verifier uncertainty is
 `265.5 / 640.0` step-bits, or `41.5%` of the simple upper bound. This supports
 the paper story that a fixed RLVR dataset has a finite information budget.
+The per-question `p_t` trajectory figures make the bound concrete: every
+trajectory stays in `[0,1]`, so each step contributes at most one verifier bit
+via `h2(p_t)`.
 
 ## 2. The dataset is mostly additive
 

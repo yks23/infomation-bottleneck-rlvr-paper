@@ -1,5 +1,8 @@
 # Figure And Table Index
 
+For detailed captions, meanings, supported claims, and original source paths,
+see `FIGURE_CATALOG.md`.
+
 ## Poster
 
 - `assets/poster/rlvr_distributional_shrinkage_poster.png`
@@ -13,6 +16,8 @@
 
 - `assets/figures/geometry40/bounded_information_budget.png`
   Bounded verifier-information budget per source.
+- `assets/figures/geometry40/p_small_multiples.png`
+  Per-question `p_i(t)` trajectories for the 40-prompt run; direct bounded-information evidence.
 - `assets/figures/geometry40/geometry40_self_gain_by_problem.png`
   Per-problem self performance gain after isolated RL.
 - `assets/figures/geometry40/geometry40_pass_rate_before_after_by_problem.png`
@@ -38,6 +43,10 @@
 
 - `assets/figures/dapo17k_sweep/*`
   Earlier DAPO17k information-gain dashboard figures.
+- `assets/figures/dapo17k_sweep/p_small_multiples.png`
+  Larger-sweep per-question `p_t` trajectories.
+- `assets/figures/dapo17k_sweep/completed_problem_H_p_subplots_latest.png`
+  Completed-problem `H(p_t)` and `p_t` subplots for the bounded-information story.
 - `assets/figures/dapo200/*`
   DAPO200 sweep figures.
 - `assets/figures/pair10/*`

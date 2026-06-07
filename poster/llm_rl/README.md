@@ -45,6 +45,10 @@ upper bound = 640.0 step-bits
 realized fraction = 41.5%
 ```
 
+The per-question `p_i(t)` trajectory figures are the direct visual evidence for
+this bound: `p_i(t)` always lives in `[0,1]`, so each verifier step contributes
+at most one binary entropy bit through `h2(p_i(t))`.
+
 Rollout shrinkage is measured using model action entropy, not binary success
 entropy:
 
@@ -67,6 +71,7 @@ The transfer matrix is low-rank enough to visualize:
 - `CONCLUSIONS.md`: concise claims, caveats, and takeaways.
 - `POSTER_TEXT.md`: text used for the poster story and talks.
 - `FIGURE_INDEX.md`: grouped figure/table list with suggested usage.
+- `FIGURE_CATALOG.md`: detailed caption, meaning, claim, and source for each figure.
 - `ASSET_MANIFEST.csv`: selected assets and their original source paths.
 - `assets/figures/geometry40`: primary 40x40 transfer geometry figures.
 - `assets/figures/dapo17k_sweep`: older DAPO17k information-gain figures.
