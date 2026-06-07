@@ -6,9 +6,9 @@ RLVR as Distributional Shrinkage
 
 ## Subtitle
 
-Bounded verifier information drives policy updates; rollout action entropy
-shrinks into problem-conditioned seeds; cross-prompt transfer reveals their
-geometry.
+Bounded rollout/path information drives policy updates; binary verifiers expose
+a finite LLM projection; rollout action entropy shrinks into
+problem-conditioned seeds; cross-prompt transfer reveals their geometry.
 
 ## Core Hypothesis
 
@@ -35,17 +35,31 @@ diagnostic conditions on successful rollouts.
 
 ## Panel 1: Bounded Information
 
-Finite verifier signal gives a per-step upper bound:
+The main object is a rollout/path information integral:
 
 ```text
-H_i(t) = h2(p_i(t)) <= 1 bit
-A_i = sum_t H_i(t)
+P_i^H = sum_t H_b(p_i(t))
+G_i^H = sum_t H_b(p_i(t)) Delta p_i^+(t)
 ```
 
-Observed cumulative verifier uncertainty:
+For a binary verifier, LLM math RLVR exposes the Bernoulli projection:
+
+```text
+H_b(p_i(t)) = h2(p_i(t)) <= 1 bit
+0 <= G_i^H <= 1 bit
+```
+
+Observed cumulative verifier projection:
 
 ```text
 265.5 / 640.0 step-bits = 41.5% of bound
+```
+
+Traditional RL contrast:
+
+```text
+Connect4 self-play renews rollout information.
+Fixed math prompts mostly exhaust a finite source.
 ```
 
 ## Panel 2: Dataset Is Mostly Additive

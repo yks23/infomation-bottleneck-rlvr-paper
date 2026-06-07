@@ -1,21 +1,27 @@
 # Conclusions
 
-## 1. Verifier information is bounded
+## 1. Rollout/path information is bounded in fixed LLM RLVR
 
-For a fixed finite prompt set, the binary verifier gives a per-step information
-budget:
+The bounded-information object is the rollout/path integral. For each prompt,
+we separate raw path exposure from the part aligned with performance movement:
 
 ```text
-H_i(t) = h2(p_i(t)) <= 1 bit
-A_i = sum_t H_i(t) <= T_i
+P_i^H = sum_t H_b(p_i(t))
+G_i^H = sum_t H_b(p_i(t)) * Delta p_i^+(t)
+0 <= G_i^H <= 1 bit
 ```
 
-In the 40-prompt run, the realized cumulative verifier uncertainty is
-`265.5 / 640.0` step-bits, or `41.5%` of the simple upper bound. This supports
-the paper story that a fixed RLVR dataset has a finite information budget.
-The per-question `p_t` trajectory figures make the bound concrete: every
-trajectory stays in `[0,1]`, so each step contributes at most one verifier bit
-via `h2(p_t)`.
+In fixed LLM math RLVR, the binary verifier makes this path integral visible
+through a Bernoulli projection: `H_b(p_i(t)) = h2(p_i(t)) <= 1` bit. In the
+40-prompt run, the realized cumulative verifier projection is `265.5 / 640.0`
+step-bits, or `41.5%` of the simple upper bound. The per-question `p_t`
+trajectory figures make the projection concrete, while the useful finite score
+is the performance-coupled integral `sum_t H_b(p_i(t)) Delta p_i^+(t)`.
+
+Traditional RL provides the contrast: in Connect4/OpenSpiel self-play, the
+environment keeps refreshing the rollout distribution near the current policy's
+frontier, so terminal reward information is not capped by a fixed set of math
+prompts in the same way.
 
 ## 2. The dataset is mostly additive
 

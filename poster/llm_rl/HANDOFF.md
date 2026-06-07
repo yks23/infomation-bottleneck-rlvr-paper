@@ -5,10 +5,10 @@ Use this file as the integration entrypoint. It is intentionally shorter than
 
 ## One-Sentence Story
 
-RLVR turns broad rollout distributions into lower-entropy problem-conditioned
-seeds; a fixed verifier gives a bounded information budget, most prompt gains
-are additive, and sparse cross-prompt transfer defines the geometry between
-seeds.
+The central object is a bounded rollout/path information integral; in fixed
+LLM RLVR, the binary verifier gives a finite observable projection of that
+integral, RL shrinks rollout distributions into problem-conditioned seeds, and
+sparse cross-prompt transfer defines the geometry between seeds.
 
 ## Main Poster Files
 
@@ -24,7 +24,7 @@ From `assets/tables/geometry40/story_numbers.csv`:
 40 x 40 source-target matrix
 positive transfer cells: 608 / 1600
 significant transfer cells: 42
-bounded verifier information: 265.5 / 640.0 step-bits = 41.5%
+LLM Bernoulli projection sum_t h2(p_t): 265.5 / 640.0 step-bits = 41.5%
 mean diagonal DeltaP_common: 0.0706
 mean off-diagonal DeltaP_common: 0.0091
 offdiag / diag: 0.129
@@ -38,31 +38,35 @@ correct-only entropy support: 31 / 40 sources
 
 ## Minimum Figure Set For A Paper/Slide
 
-1. `assets/figures/geometry40/p_small_multiples.png`
+1. `assets/figures/traditional_rl/openspiel_c4_mean_win_rate_by_condition.pdf`
+   - Caption: Connect4/OpenSpiel traditional RL comparison.
+   - Use for: AlphaZero-style self-play can renew rollout information, unlike a fixed prompt set.
+
+2. `assets/figures/geometry40/p_small_multiples.png`
    - Caption: Per-prompt pass-rate trajectories `p_i(t)` in the 40-prompt run.
-   - Use for: bounded verifier information evidence.
+   - Use for: finite LLM verifier projection of the path integral.
 
-2. `assets/figures/geometry40/bounded_information_budget.png`
+3. `assets/figures/geometry40/bounded_information_budget.png`
    - Caption: Realized cumulative verifier uncertainty versus per-step bound.
-   - Use for: finite information budget.
+   - Use for: bounded Bernoulli projection in fixed-dataset LLM RLVR.
 
-3. `assets/figures/geometry40/diag_vs_offdiag_transfer_histogram.png`
+4. `assets/figures/geometry40/diag_vs_offdiag_transfer_histogram.png`
    - Caption: Self-transfer dominates off-diagonal transfer.
    - Use for: dataset is mostly additive.
 
-4. `assets/figures/geometry40/correct_rollout_action_entropy_trajectories.png`
+5. `assets/figures/geometry40/correct_rollout_action_entropy_trajectories.png`
    - Caption: Action entropy of successful rollouts during RL.
    - Use for: rollout distribution shrinkage.
 
-5. `assets/figures/geometry40/cluster_heatmap.png`
+6. `assets/figures/geometry40/cluster_heatmap.png`
    - Caption: Cluster-sorted directed transfer matrix.
    - Use for: prompt transfer geometry.
 
-6. `assets/figures/geometry40/seed_geometry_sharpness_embedding.png`
+7. `assets/figures/geometry40/seed_geometry_sharpness_embedding.png`
    - Caption: Problem seeds embedded by transfer fingerprints.
    - Use for: geometric visualization.
 
-7. `assets/figures/geometry40/svd_spectrum.png`
+8. `assets/figures/geometry40/svd_spectrum.png`
    - Caption: Low-rank structure of the transfer matrix.
    - Use for: dimensionality of prompt geometry.
 
@@ -71,7 +75,7 @@ correct-only entropy support: 31 / 40 sources
 - `assets/tables/geometry40/story_numbers.csv`
   - Main numbers for poster and text.
 - `assets/tables/geometry40/bounded_information_by_source.csv`
-  - Per-source verifier information, action entropy, and self gain.
+  - Per-source Bernoulli projection, action entropy, and self gain.
 - `assets/tables/geometry40/geometry40_self_gain_by_problem.csv`
   - Per-prompt self gain.
 - `assets/tables/geometry40_endpoint/delta_p_common_initial_matrix.csv`
@@ -84,9 +88,12 @@ correct-only entropy support: 31 / 40 sources
 Short abstract:
 
 ```text
-We view RLVR as distributional shrinkage. For each prompt, the verifier exposes
-a bounded binary information budget, while RL sharpens the model's rollout
-distribution into a lower-entropy problem-conditioned seed. On a 40-prompt
+We view RL as converting rollout/path information into performance movement.
+In fixed-dataset LLM RLVR, the binary verifier gives a finite Bernoulli
+projection of the path integral, while RL sharpens the model's rollout
+distribution into lower-entropy problem-conditioned seeds. Connect4 self-play
+is the traditional-RL contrast: it renews the rollout distribution, so terminal
+reward information is not capped by a fixed question set. On a 40-prompt LLM
 geometry run, self-transfer dominates cross-transfer (offdiag/diag = 0.129),
 suggesting the dataset is mostly additive. Sparse positive cross-transfer still
 reveals a low-dimensional prompt geometry: 2D explains 48.3% and 16D explains
@@ -96,9 +103,19 @@ reveals a low-dimensional prompt geometry: 2D explains 48.3% and 16D explains
 Bounded-information sentence:
 
 ```text
-Because each prompt success rate p_i(t) lies in [0,1], the verifier entropy
-h2(p_i(t)) is at most one bit per training step; in the 40-prompt run, the
-realized cumulative verifier uncertainty is 265.5 of 640.0 possible step-bits.
+The bounded-information object is the rollout/path integral. In LLM math RLVR,
+the binary verifier gives an observable Bernoulli projection: h2(p_i(t)) is at
+most one bit per training step, and the 40-prompt run realizes 265.5 of 640.0
+possible step-bits before projecting useful information onto performance
+movement through sum_t h2(p_i(t)) Delta p_i^+(t).
+```
+
+Traditional RL contrast:
+
+```text
+Connect4/OpenSpiel shows the AlphaZero-style contrast: self-play renews the
+rollout distribution as the policy changes, keeping reward variation near the
+current frontier instead of exhausting a fixed prompt-verifier source.
 ```
 
 Additivity sentence:

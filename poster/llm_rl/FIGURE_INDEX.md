@@ -12,12 +12,19 @@ see `FIGURE_CATALOG.md`.
 - `assets/poster/rlvr_story_overview.png`
   Six-panel overview generated from the story assets.
 
+## Traditional RL Anchor
+
+- `assets/figures/traditional_rl/openspiel_c4_mean_win_rate_by_condition.pdf`
+  Connect4/OpenSpiel comparison; use as the AlphaZero-style evidence that
+  self-play can renew rollout/path information instead of exhausting a fixed
+  prompt source.
+
 ## Primary 40x40 Figures
 
 - `assets/figures/geometry40/bounded_information_budget.png`
-  Bounded verifier-information budget per source.
+  Bounded Bernoulli-verifier projection per source.
 - `assets/figures/geometry40/p_small_multiples.png`
-  Per-question `p_i(t)` trajectories for the 40-prompt run; direct bounded-information evidence.
+  Per-question `p_i(t)` trajectories for the 40-prompt run; visual evidence for the finite LLM verifier projection.
 - `assets/figures/geometry40/geometry40_self_gain_by_problem.png`
   Per-problem self performance gain after isolated RL.
 - `assets/figures/geometry40/geometry40_pass_rate_before_after_by_problem.png`
@@ -46,7 +53,7 @@ see `FIGURE_CATALOG.md`.
 - `assets/figures/dapo17k_sweep/p_small_multiples.png`
   Larger-sweep per-question `p_t` trajectories.
 - `assets/figures/dapo17k_sweep/completed_problem_H_p_subplots_latest.png`
-  Completed-problem `H(p_t)` and `p_t` subplots for the bounded-information story.
+  Completed-problem `H(p_t)` and `p_t` subplots for the binary-verifier projection story.
 - `assets/figures/dapo200/*`
   DAPO200 sweep figures.
 - `assets/figures/pair10/*`

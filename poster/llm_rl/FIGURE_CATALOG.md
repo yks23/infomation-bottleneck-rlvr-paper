@@ -1,6 +1,6 @@
 # Figure Catalog
 
-This catalog explains every PNG under `assets/figures`. The short `FIGURE_INDEX.md`
+This catalog explains every bundled figure asset. The short `FIGURE_INDEX.md`
 is for navigation; this file is for captions and interpretation.
 
 ### Poster assets
@@ -9,8 +9,9 @@ Path: `assets/poster/rlvr_distributional_shrinkage_poster.png`
 
 Caption: RLVR as Distributional Shrinkage.
 
-Meaning: One-slide summary of the story: bounded verifier information, mostly
-additive data, rollout entropy shrinkage, and transfer geometry.
+Meaning: One-slide summary of the story: bounded rollout/path information,
+the LLM binary-verifier projection of that information, mostly additive data,
+rollout entropy shrinkage, and transfer geometry.
 
 Supports: Main poster narrative.
 
@@ -28,17 +29,36 @@ dense.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/qwen25-geometry40-20260607_180845/story_assets_40row/rlvr_story_overview.png`
 
+## assets/figures/traditional_rl/openspiel_c4_mean_win_rate_by_condition.pdf
+
+Path: `assets/figures/traditional_rl/openspiel_c4_mean_win_rate_by_condition.pdf`
+
+Caption: Connect4/OpenSpiel traditional RL comparison.
+
+Meaning: This is the traditional-RL anchor for the poster. Connect4 self-play
+renews the rollout distribution as the policy changes, so terminal reward
+variation can remain near the current frontier instead of being exhausted by a
+fixed prompt set.
+
+Supports: The AlphaZero-style contrast: LLM math RLVR has a fixed
+prompt-verifier source, while self-play can keep the rollout/path information
+integral growing by generating fresh games.
+
+Source: `/mnt/shared-storage-user/sunyoubang/kaisen/infomation-bottleneck-rlvr-paper/figures/openspiel_c4_mean_win_rate_by_condition.pdf`
+
 ## assets/figures/geometry40/bounded_information_budget.png
 
 Path: `assets/figures/geometry40/bounded_information_budget.png`
 
-Caption: Bounded verifier information per source prompt.
+Caption: Bounded Bernoulli-verifier projection per source prompt.
 
 Meaning: Blue bars show realized cumulative verifier uncertainty
-`sum_t h2(p_i(t))`; gray bars show the per-step upper bound. The gap visualizes
-unused finite verifier-information budget.
+`sum_t h2(p_i(t))`; gray bars show the per-step binary bound. This is not the
+full definition of information. It is the LLM math verifier projection of the
+rollout/path information integral.
 
-Supports: Bounded information.
+Supports: Fixed-dataset LLM RLVR exposes a bounded binary projection of the
+rollout/path information integral.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/qwen25-geometry40-20260607_180845/story_assets_40row/figures/bounded_information_budget.png`
 
@@ -49,10 +69,11 @@ Path: `assets/figures/geometry40/p_small_multiples.png`
 Caption: Per-question pass-rate trajectories `p_i(t)` for the 40-prompt run.
 
 Meaning: Each small panel tracks one prompt's rollout success rate during
-isolated training. Since every curve stays inside `[0,1]`, each verifier step
-has binary entropy at most one bit.
+isolated training. Since every curve stays inside `[0,1]`, the binary verifier
+projection has entropy at most one bit per step; the useful finite score then
+projects this exposure onto monotone performance movement.
 
-Supports: Bounded information; prompt-local training dynamics.
+Supports: LLM binary-verifier projection; prompt-local training dynamics.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/qwen25-geometry40-20260607_180845/isolated40/aggregate/p_small_multiples.png`
 
@@ -65,7 +86,8 @@ Caption: Cumulative verifier uncertainty versus self performance gain.
 Meaning: Shows whether prompts with larger realized verifier uncertainty also
 produce stronger self improvement.
 
-Supports: Relationship between information budget and performance.
+Supports: Relationship between the verifier projection of path information and
+performance.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/qwen25-geometry40-20260607_180845/story_assets_40row/figures/information_vs_self_gain.png`
 
@@ -289,9 +311,9 @@ Path: `assets/figures/dapo17k_sweep/p_small_multiples.png`
 Caption: DAPO17k per-question pass-rate trajectories `p_t`.
 
 Meaning: Larger-sweep view of prompt-level success-rate dynamics. This is the
-older version of the bounded-information evidence.
+older evidence for the finite LLM binary-verifier projection.
 
-Supports: Bounded information across a broader prompt sweep.
+Supports: Binary-verifier projection across a broader prompt sweep.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/dapo17k_infogain_dashboard_latest/p_small_multiples.png`
 
@@ -304,7 +326,7 @@ Caption: Completed-problem `H(p_t)` and `p_t` subplots.
 Meaning: Places verifier entropy and success-rate trajectories side by side,
 making the finite binary-information proxy visually explicit.
 
-Supports: Bounded verifier information.
+Supports: Finite binary projection of rollout/path information.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/dapo17k_infogain_dashboard_latest/completed_problem_H_p_subplots_latest.png`
 
@@ -317,7 +339,7 @@ Caption: DAPO17k verifier entropy heatmap.
 Meaning: Heatmap of `H(p_t)` across prompts and steps, showing where binary
 verifier uncertainty is concentrated.
 
-Supports: Bounded information and prompt heterogeneity.
+Supports: Binary-verifier projection and prompt heterogeneity.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/dapo17k_infogain_dashboard_latest/H_heatmap.png`
 
@@ -343,7 +365,8 @@ Caption: Completed-problem verifier entropy, success rate, and action entropy.
 Meaning: Combines the three central per-prompt trajectories used in the story:
 `H(p_t)`, `p_t`, and rollout action entropy.
 
-Supports: Unified view of bounded information and distributional shrinkage.
+Supports: Unified view of binary-verifier projection and distributional
+shrinkage.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/dapo17k_infogain_dashboard_latest/completed_problem_H_p_action_entropy_subplots_latest.png`
 
@@ -392,7 +415,7 @@ Caption: DAPO200 verifier entropy heatmap.
 
 Meaning: Heatmap of binary verifier uncertainty over a 200-problem sweep.
 
-Supports: Scalability of bounded-information diagnostics.
+Supports: Scalability of binary-verifier projection diagnostics.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/dapo200-lr6e6-r32-s50-combined-20260526/final_044405/H_heatmap.png`
 
@@ -403,9 +426,9 @@ Path: `assets/figures/dapo200/p_small_multiples.png`
 Caption: DAPO200 per-question pass-rate trajectories.
 
 Meaning: Shows many prompt-level `p_t` curves in one sweep, useful as
-large-scale bounded-information evidence.
+large-scale finite-projection evidence.
 
-Supports: Bounded information at larger prompt count.
+Supports: Binary-verifier projection at larger prompt count.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/dapo200-lr6e6-r32-s50-combined-20260526/final_044405/p_small_multiples.png`
 
@@ -480,7 +503,7 @@ Caption: Pair10 variance endpoint bar.
 Meaning: Uses `p(1-p)` as an unsmoothed verifier-uncertainty proxy for endpoint
 comparisons.
 
-Supports: Alternative feature map for bounded information.
+Supports: Alternative feature map for the finite LLM verifier projection.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/dapo17k_infogain_dashboard_latest/paper_assets_pair10_20260527/figures/pair10_var_endpoint_bar.png`
 
@@ -583,7 +606,7 @@ Caption: Information-weighted positive 8x8 transfer matrix.
 
 Meaning: Weights positive endpoint transfer by source-side information exposure.
 
-Supports: Linking information budget to transfer geometry.
+Supports: Linking the source-side Bernoulli projection to transfer geometry.
 
 Source: `/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/transfer-matrix8-20260603-173013/analysis/info_weighted_positive_common.png`
 

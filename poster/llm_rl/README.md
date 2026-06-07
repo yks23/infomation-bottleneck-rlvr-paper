@@ -3,7 +3,8 @@
 This directory is a self-contained sharing bundle for the LLM RLVR poster story:
 
 ```text
-finite verifier information
+bounded rollout/path information integral
+-> finite verifier projection in LLM RLVR
 -> rollout/action entropy shrinkage
 -> cross-prompt transfer geometry
 -> curriculum / prompt allocation
@@ -22,6 +23,21 @@ rollout/action distribution for each prompt. RL updates reduce uncertainty and
 turn that broad distribution into lower-entropy, problem-conditioned seeds.
 Cross-prompt transfer then defines a directed geometry between those seeds.
 
+The bounded-information object is the rollout/path-level information integral,
+not `h2(p)` by itself. For a binary verifier, `h2(p_t)` or `p_t(1-p_t)` is the
+observable Bernoulli projection of that path integral. The useful finite score
+is the performance-coupled projection:
+
+```text
+P_i^H = sum_t H_b(p_i(t))
+G_i^H = sum_t H_b(p_i(t)) * Delta p_i^+(t)
+0 <= G_i^H <= 1 bit
+```
+
+Connect4/OpenSpiel is the traditional-RL anchor: self-play can keep refreshing
+the rollout distribution near the current frontier, so its information integral
+is not capped by a fixed prompt set in the same way as fixed-dataset LLM RLVR.
+
 ## Main 40x40 Result
 
 The latest run trains on 40 source prompts and evaluates transfer to the same
@@ -37,7 +53,7 @@ offdiag / diag: 0.129
 near-additivity score: 0.871
 ```
 
-The finite verifier-information proxy is bounded:
+The LLM Bernoulli-verifier projection is bounded:
 
 ```text
 sum_i sum_t h2(p_i(t)) = 265.5 step-bits
@@ -45,9 +61,11 @@ upper bound = 640.0 step-bits
 realized fraction = 41.5%
 ```
 
-The per-question `p_i(t)` trajectory figures are the direct visual evidence for
-this bound: `p_i(t)` always lives in `[0,1]`, so each verifier step contributes
-at most one binary entropy bit through `h2(p_i(t))`.
+The per-question `p_i(t)` trajectory figures are direct visual evidence for the
+finite binary projection: `p_i(t)` always lives in `[0,1]`, so each verifier step
+contributes at most one Bernoulli entropy bit. The poster should phrase this as
+evidence about the LLM projection of the rollout/path integral, not as the full
+definition of information.
 
 Rollout shrinkage is measured using model action entropy, not binary success
 entropy:
@@ -75,6 +93,7 @@ The transfer matrix is low-rank enough to visualize:
 - `FIGURE_CATALOG.md`: detailed caption, meaning, claim, and source for each figure.
 - `ASSET_MANIFEST.csv`: selected assets and their original source paths.
 - `assets/figures/geometry40`: primary 40x40 transfer geometry figures.
+- `assets/figures/traditional_rl`: Connect4/OpenSpiel traditional RL anchor.
 - `assets/figures/dapo17k_sweep`: older DAPO17k information-gain figures.
 - `assets/figures/dapo200`: 200-problem sweep figures.
 - `assets/figures/pair10`: pair/additivity pilot figures.
