@@ -1,0 +1,10 @@
+{
+  "num_sources_with_gpu_monitor": 40,
+  "gpu_samples_total": 23464,
+  "gpu_util_mean_weighted": 33.14861063757245,
+  "gpu_memory_mean_gb_weighted": 57.87510046973555,
+  "gpu_power_mean_w_weighted": 236.96267601431984,
+  "gpu_util_p50_by_source_mean": 0.925,
+  "gpu_util_p90_by_source_mean": 100.0,
+  "gpu_util_max": 100.0
+}

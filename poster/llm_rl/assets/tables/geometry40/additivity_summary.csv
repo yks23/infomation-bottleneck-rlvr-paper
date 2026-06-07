@@ -1,0 +1,2 @@
+num_sources,num_targets,num_records,positive_cells,positive_cell_fraction,significant_cells,diag_mean_delta_common,offdiag_mean_delta_common,offdiag_mean_positive_delta_common,offdiag_to_diag_ratio,near_additivity_score_1_minus_ratio
+40,40,1600,608,0.38,42,0.07064453125,0.009146133814102559,0.02556740785256409,0.1294669757484244,0.8705330242515756

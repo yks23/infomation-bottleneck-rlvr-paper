@@ -1,0 +1,44 @@
+{
+  "manifest": "/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/transfer-matrix8-20260603-173013/manifest.jsonl",
+  "num_manifest_rows": 8,
+  "num_records": 64,
+  "num_valid_records": 64,
+  "sources": [
+    "12592",
+    "12008",
+    "11149",
+    "14376",
+    "11522",
+    "9483",
+    "3595",
+    "9337"
+  ],
+  "targets": [
+    "12592",
+    "12008",
+    "11149",
+    "14376",
+    "11522",
+    "9483",
+    "3595",
+    "9337"
+  ],
+  "mean_delta_p_all": 0.076171875,
+  "mean_positive_delta_p_all": 0.1337890625,
+  "mean_delta_p_offdiag": -0.014508928571428572,
+  "mean_positive_delta_p_offdiag": 0.05133928571428571,
+  "common_initial_by_target": {
+    "12592": 0.0390625,
+    "12008": 0.015625,
+    "11149": 0.4375,
+    "14376": 0.03125,
+    "11522": 0.0078125,
+    "9483": 0.0,
+    "3595": 0.359375,
+    "9337": 0.4453125
+  },
+  "mean_delta_p_common_initial_all": 0.076171875,
+  "mean_positive_delta_p_common_initial_all": 0.136474609375,
+  "mean_delta_p_common_initial_offdiag": -0.011858258928571428,
+  "mean_positive_delta_p_common_initial_offdiag": 0.05705915178571429
+}

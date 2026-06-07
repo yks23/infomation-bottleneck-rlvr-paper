@@ -1,0 +1,17 @@
+category,kind,count
+dapo17k_sweep,figures,234
+dapo17k_sweep,tables,461
+dapo200_sweep,figures,506
+dapo200_sweep,tables,651
+geometry40,figures,212
+geometry40,tables,309
+misc,figures,124
+misc,tables,207
+pair10_additivity,figures,31
+pair10_additivity,tables,52
+sampler_ablation,figures,6
+sampler_ablation,tables,17
+sequential_vs_isolated,figures,54
+sequential_vs_isolated,tables,59
+transfer_matrix_or_pair,figures,42
+transfer_matrix_or_pair,tables,100

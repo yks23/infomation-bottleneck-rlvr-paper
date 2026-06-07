@@ -1,0 +1,21 @@
+{
+  "num_compared_problems": 9,
+  "seq_total_P_V": 6.51171875,
+  "isolated_total_P_V": 0.6923828125,
+  "P_V_ratio_seq_over_isolated": 9.404795486600847,
+  "P_V_signed_delta": 5.8193359375,
+  "P_V_signed_delta_frac": 8.404795486600847,
+  "P_V_abs_problem_delta_sum": 5.9970703125,
+  "P_V_abs_problem_delta_frac": 8.661495063469676,
+  "seq_total_G_V": 0.22357177734375,
+  "isolated_total_G_V": 0.012176513671875,
+  "G_V_ratio_seq_over_isolated": 18.360902255639097,
+  "G_V_signed_delta": 0.211395263671875,
+  "G_V_signed_delta_frac": 17.360902255639097,
+  "G_V_abs_problem_delta_sum": 0.215057373046875,
+  "G_V_abs_problem_delta_frac": 17.661654135338345,
+  "mean_final_p_delta": 0.0763888888888889,
+  "mean_abs_final_p_delta": 0.0763888888888889,
+  "mean_pmax_delta": 0.11805555555555555,
+  "mean_abs_pmax_delta": 0.125
+}

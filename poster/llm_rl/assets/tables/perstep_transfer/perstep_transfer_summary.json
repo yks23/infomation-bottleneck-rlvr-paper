@@ -1,0 +1,18 @@
+{
+  "manifest": "/mnt/shared-storage-user/safewt-share/sunyoubang/verl-agent-run-logs/perstep-transfer-20260603-185621/manifest.jsonl",
+  "num_pairs": 8,
+  "sources": [
+    "11149",
+    "3595",
+    "12592",
+    "12008",
+    "14376"
+  ],
+  "targets": [
+    "9337",
+    "3595",
+    "14376",
+    "12008",
+    "11149"
+  ]
+}
