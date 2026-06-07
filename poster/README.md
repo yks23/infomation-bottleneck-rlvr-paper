@@ -6,6 +6,10 @@ Primary integrated poster:
 - `vertical_integrated_poster/vertical_information_integral_poster.pdf`
 - `vertical_integrated_poster/build_vertical_poster.py`
 
+Minimal website:
+
+- `../website/index.html`
+
 Core story:
 
 ```text
