@@ -1,0 +1,121 @@
+condition,prompt_id,prompt,reward_model,n,p_bar,H_bits,Srel,Iacc
+imagereward,parti_00233,the Great Wall,hpsv2,4.0,0.36519850852375857,0.946913907596153,0.008280002152591209,0.9356142218639323
+imagereward,parti_00233,the Great Wall,imagereward,4.0,0.3279977124366049,0.9128675519314099,0.027214590218675477,0.9095255008714337
+imagereward,parti_00233,the Great Wall,pickscore,4.0,0.24578686632916247,0.80453191782622,0.006885009148369853,0.7930139383828577
+imagereward,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",hpsv2,4.0,0.5147916833073896,0.999368602149078,0.004083700361104919,0.9754814086148558
+imagereward,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",imagereward,4.0,0.5521946781079337,0.9921250377697767,0.005259900364560439,0.9736148982095398
+imagereward,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",pickscore,4.0,0.39852156341228284,0.9700791921848965,0.0009309477329608501,0.8759833266846291
+imagereward,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",hpsv2,4.0,0.4470522919477997,0.9918957384448857,0.0017762058784189458,0.9390286330885831
+imagereward,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",imagereward,4.0,0.6491685999332144,0.9348083752231909,0.013015419679946898,0.9276808230896325
+imagereward,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",pickscore,4.0,0.35899149132954783,0.9418428657642463,0.0008609648775168282,0.8438327420021785
+imagereward,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",hpsv2,4.0,0.6247532982498802,0.9546156263260177,0.006212301077153532,0.9394925259754797
+imagereward,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",imagereward,4.0,0.5614597876994633,0.9890733870314821,0.0531369299329944,0.9872155162108386
+imagereward,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",pickscore,4.0,0.6252272065748706,0.9542664006015464,0.008072071698858117,0.9425892343239319
+imagereward,parti_00555,the Taj Mahal at sunrise,hpsv2,4.0,0.4190735103411339,0.9810199201909311,0.046460887241392676,0.9789129587941156
+imagereward,parti_00555,the Taj Mahal at sunrise,imagereward,4.0,0.4466208522209285,0.9917628729026613,0.03870379256819234,0.989207032848729
+imagereward,parti_00555,the Taj Mahal at sunrise,pickscore,4.0,0.3624004895480935,0.9446577520109362,0.05812748081974323,0.9430353947687684
+imagereward,parti_00674,an elder politician giving a campaign speech,hpsv2,4.0,0.37581090646615106,0.9550295898394017,0.008731365166764213,0.9442155246093337
+imagereward,parti_00674,an elder politician giving a campaign speech,imagereward,4.0,0.40864116764143166,0.9757814501377089,0.01032567866399822,0.9664220455216118
+imagereward,parti_00674,an elder politician giving a campaign speech,pickscore,4.0,0.43535384944098027,0.9879077724092072,0.012710720446371395,0.9801962016466977
+imagereward,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,hpsv2,4.0,0.6311561520487977,0.9497802301639732,0.005619598389601,0.9331745147715987
+imagereward,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,imagereward,4.0,0.5897672632980164,0.9766225152006284,0.003789118440488053,0.9515108470901023
+imagereward,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,pickscore,4.0,0.5168760940890366,0.9991780774434553,0.001762251537554684,0.9455237747193737
+imagereward,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,hpsv2,4.0,0.4500567298140226,0.9927908682646645,0.0008325098482021991,0.8863264839818944
+imagereward,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,imagereward,4.0,0.28577690522166854,0.8632033331934416,0.0003445005546321023,0.6690071000958507
+imagereward,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,pickscore,4.0,0.4869954224016078,0.9995119705715696,0.0009075435144585145,0.9003091117145268
+imagereward,parti_00973,a view of the Milllenium Wheel from the Thames,hpsv2,4.0,0.33079847313350796,0.9157400896318093,0.012214071835706993,0.9083035560314738
+imagereward,parti_00973,a view of the Milllenium Wheel from the Thames,imagereward,4.0,0.31980176177184516,0.9041657507285965,0.011753693687066476,0.8965380375904114
+imagereward,parti_00973,a view of the Milllenium Wheel from the Thames,pickscore,4.0,0.31649408000823576,0.900528074175398,0.011066756710281917,0.8924637086882712
+imagereward,parti_00995,a red block to the left of a blue pyramid,hpsv2,4.0,0.5577110137331645,0.9903685797690964,0.0014972812346681736,0.9283651856094673
+imagereward,parti_00995,a red block to the left of a blue pyramid,imagereward,4.0,0.5175995021510711,0.9991060874901003,0.01798972774452564,0.9935830298653529
+imagereward,parti_00995,a red block to the left of a blue pyramid,pickscore,4.0,0.4156320596184512,0.9793633530806434,0.001539936577893245,0.9196437659769281
+ir_ps,parti_00233,the Great Wall,hpsv2,4.0,0.3768516391169312,0.9557880518902475,0.005804702188152567,0.9396011550505055
+ir_ps,parti_00233,the Great Wall,imagereward,4.0,0.3253085020873969,0.9100611089758575,0.02570754096563426,0.9065347710338284
+ir_ps,parti_00233,the Great Wall,pickscore,4.0,0.2587051491605743,0.8247861320491607,0.006206524209484596,0.8117078324240085
+ir_ps,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",hpsv2,4.0,0.5525722784245626,0.9920104712296943,0.004453271067373032,0.970223706142545
+ir_ps,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",imagereward,4.0,0.5835973893414161,0.9797403698348129,0.0019065890317800076,0.9309142099028161
+ir_ps,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",pickscore,4.0,0.3982520688842658,0.9699189328728528,0.0001428379995007382,0.5705090650321715
+ir_ps,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",hpsv2,4.0,0.45081662425979163,0.9930089286962902,0.005758851531691483,0.9760600621253429
+ir_ps,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",imagereward,4.0,0.6051647878467014,0.9678490956031189,0.016482828923014985,0.9620126421240635
+ir_ps,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",pickscore,4.0,0.38218572116638405,0.9595711125612485,0.004917868960619375,0.9404480322239173
+ir_ps,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",hpsv2,4.0,0.6403240908904752,0.9424138406184541,0.006163034345205072,0.9273666001168918
+ir_ps,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",imagereward,4.0,0.6431900589308222,0.9400032985987402,0.04213664662052374,0.9377777353170615
+ir_ps,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",pickscore,4.0,0.639427387276117,0.9431574744399038,0.008273901036080528,0.9318944147216659
+ir_ps,parti_00555,the Taj Mahal at sunrise,hpsv2,4.0,0.4071044396424146,0.9749550158717293,0.04761392801024407,0.9729116816577396
+ir_ps,parti_00555,the Taj Mahal at sunrise,imagereward,4.0,0.4288279439157801,0.9853344057165401,0.04232010867541865,0.9830116054303458
+ir_ps,parti_00555,the Taj Mahal at sunrise,pickscore,4.0,0.36380166893525434,0.9457936794713421,0.06603822801250878,0.9443636537390342
+ir_ps,parti_00674,an elder politician giving a campaign speech,hpsv2,4.0,0.35495922482418163,0.9384192503606764,0.010146808450142292,0.9292610890177888
+ir_ps,parti_00674,an elder politician giving a campaign speech,imagereward,4.0,0.37376455698089944,0.953518824227533,0.00901049469846162,0.9430526656292679
+ir_ps,parti_00674,an elder politician giving a campaign speech,pickscore,4.0,0.4256641858370305,0.9839966114873988,0.015873526998188222,0.9778364402766261
+ir_ps,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,hpsv2,4.0,0.6468810491777275,0.9368227402412949,0.001660804430676345,0.8836184931414933
+ir_ps,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,imagereward,4.0,0.6380535081860647,0.9442870705008237,0.004166168419723211,0.922152757515541
+ir_ps,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,pickscore,4.0,0.5473095095513806,0.9935322787532387,0.00022838622521714918,0.6909823535557813
+ir_ps,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,hpsv2,4.0,0.4258294988910454,0.9840679756547066,0.0045897423402064645,0.9630845632565879
+ir_ps,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,imagereward,4.0,0.30384064913407466,0.8859351340537793,0.007102778160210119,0.8736352254025883
+ir_ps,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,pickscore,4.0,0.4551794456551289,0.994195803610027,0.00822508611476567,0.9822536352059467
+ir_ps,parti_00973,a view of the Milllenium Wheel from the Thames,hpsv2,4.0,0.3920631161590983,0.9661180518057064,0.016825517591323082,0.9604099956319856
+ir_ps,parti_00973,a view of the Milllenium Wheel from the Thames,imagereward,4.0,0.38672012066323197,0.9626502752697621,0.020410108751721563,0.9579567346994863
+ir_ps,parti_00973,a view of the Milllenium Wheel from the Thames,pickscore,4.0,0.35549722405604955,0.9388819525508518,0.012596095553973391,0.9314869077627949
+ir_ps,parti_00995,a red block to the left of a blue pyramid,hpsv2,4.0,0.5536081094773126,0.9916919208884603,0.00565846635421298,0.974470461911576
+ir_ps,parti_00995,a red block to the left of a blue pyramid,imagereward,4.0,0.5551944564231335,0.9911919268782012,0.022986492752946737,0.9868985422680522
+ir_ps,parti_00995,a red block to the left of a blue pyramid,pickscore,4.0,0.415786518490057,0.9794392095890183,0.0019427520861772809,0.9314921671546181
+no_rl,parti_00233,the Great Wall,hpsv2,4.0,0.3363636077921709,0.9212963461820844,0.0012968895105719433,0.8553429304531003
+no_rl,parti_00233,the Great Wall,imagereward,4.0,0.25275973865005136,0.8156229773689828,0.001180498437362755,0.7519272356507192
+no_rl,parti_00233,the Great Wall,pickscore,4.0,0.21105105191160467,0.7434869896057744,0.00035018285672361717,0.5783347679026217
+no_rl,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",hpsv2,4.0,0.4787901248695142,0.998701592307756,0.004566229771382993,0.9772988401665609
+no_rl,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",imagereward,4.0,0.5351372661630517,0.9964346801829695,0.00481049832669695,0.9761427543153719
+no_rl,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",pickscore,4.0,0.3708379040180381,0.9513132856652782,0.0010799498735058334,0.8706900908138933
+no_rl,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",hpsv2,4.0,0.5057791560204039,0.9999036297371441,0.0027204290045014885,0.9644514475286479
+no_rl,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",imagereward,4.0,0.6520024566486549,0.9322669663342176,0.00887066284744684,0.9218745685572846
+no_rl,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",pickscore,4.0,0.4020865899768259,0.9721580928655247,0.0007293243724212093,0.8549351912851317
+no_rl,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",hpsv2,4.0,0.6991386474057515,0.8823412629901979,0.0019533178176199097,0.8393697728770426
+no_rl,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",imagereward,4.0,0.7490561295984691,0.8127706990950141,0.005716178210479734,0.7987963903705918
+no_rl,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",pickscore,4.0,0.6611882429306406,0.9236770968689808,0.002735005679839815,0.8910959594329116
+no_rl,parti_00555,the Taj Mahal at sunrise,hpsv2,4.0,0.3351374364239325,0.9200893813873914,0.008263376764123555,0.9090879712233259
+no_rl,parti_00555,the Taj Mahal at sunrise,imagereward,4.0,0.35541097794927,0.9388078999340757,0.010963511024688663,0.9303222763572646
+no_rl,parti_00555,the Taj Mahal at sunrise,pickscore,4.0,0.28928825994681523,0.8678000690643568,0.011049343391152974,0.8600166504483964
+no_rl,parti_00674,an elder politician giving a campaign speech,hpsv2,4.0,0.32041447398133993,0.9048316134256559,0.00994211594370131,0.8958212453070405
+no_rl,parti_00674,an elder politician giving a campaign speech,imagereward,4.0,0.3778169395162412,0.9564855923183386,0.008220298410566809,0.9449897835730225
+no_rl,parti_00674,an elder politician giving a campaign speech,pickscore,4.0,0.3749218791227886,0.9543764117426432,0.008702049583847214,0.9435337505800201
+no_rl,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,hpsv2,4.0,0.600883737141385,0.970431293429729,0.004436824296652964,0.9490411925579437
+no_rl,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,imagereward,4.0,0.6403938308763728,0.9423557944105514,0.003989429083572379,0.9193120938070592
+no_rl,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,pickscore,4.0,0.48218287272224847,0.9990838389003214,0.004428045443115083,0.9770194879247931
+no_rl,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,hpsv2,4.0,0.40536625474401816,0.974003227502384,0.014113312535707913,0.9671504743172599
+no_rl,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,imagereward,4.0,0.3746633179600054,0.9541855309258578,0.025456197915958316,0.9504518553060973
+no_rl,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,pickscore,4.0,0.44859010596481613,0.992360485709895,0.00548522700497766,0.9745928912177555
+no_rl,parti_00973,a view of the Milllenium Wheel from the Thames,hpsv2,4.0,0.3830026748699513,0.9601351408406431,0.0026621321803257446,0.9253744893526535
+no_rl,parti_00973,a view of the Milllenium Wheel from the Thames,imagereward,4.0,0.4053989690212689,0.974021307945506,0.026947337221289294,0.9704201353051958
+no_rl,parti_00973,a view of the Milllenium Wheel from the Thames,pickscore,4.0,0.3843068023400441,0.9610270735118633,0.0042856457097318786,0.9391140614466316
+no_rl,parti_00995,a red block to the left of a blue pyramid,hpsv2,4.0,0.5056923604998608,0.9999065027775524,0.01556329187116649,0.993522745703995
+no_rl,parti_00995,a red block to the left of a blue pyramid,imagereward,4.0,0.3974580651036046,0.9694442234685038,0.019430826508799733,0.9644805614185045
+no_rl,parti_00995,a red block to the left of a blue pyramid,pickscore,4.0,0.3558665172857599,0.9391985054606748,0.007078763629873106,0.9261154934841783
+pickscore,parti_00233,the Great Wall,hpsv2,4.0,0.38839627109822145,0.9637568035349094,0.009773782937745674,0.9539960379842445
+pickscore,parti_00233,the Great Wall,imagereward,4.0,0.33270471917535016,0.9176659367919504,0.02973324558490518,0.9145899525374708
+pickscore,parti_00233,the Great Wall,pickscore,4.0,0.26238138482774476,0.8303186948431514,0.008440075192416706,0.8205960791034159
+pickscore,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",hpsv2,4.0,0.5547597602248404,0.9913303988025761,0.002741900024486181,0.9564477361381213
+pickscore,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",imagereward,4.0,0.5677424835175514,0.9867180077681148,0.00023822971862252584,0.6949878748316531
+pickscore,parti_00300,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. The city of Los Angeles is in the background.",pickscore,4.0,0.41226576833491874,0.9776749032138343,0.000468007766026466,0.8055513933447315
+pickscore,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",hpsv2,4.0,0.43466249445730526,0.9876470019103083,0.0033557634373050063,0.9590672967357976
+pickscore,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",imagereward,4.0,0.6393646274048307,0.9432093325679587,0.009469190295600331,0.9333526017116226
+pickscore,parti_00308,"a portrait of a statue of the Egyptian god Anubis wearing aviator goggles, white t-shirt and leather jacket. the skyline of Los Angeles at night can be seen in the background.",pickscore,4.0,0.37693974307404166,0.9558519544299074,0.005239563717998895,0.93795064254542
+pickscore,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",hpsv2,4.0,0.6985323740143697,0.8830775222744751,0.004660611601601267,0.8645278568916187
+pickscore,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",imagereward,4.0,0.6819816851295699,0.9022134161730755,0.03021853265288438,0.8992376342429192
+pickscore,parti_00422,"a young badger delicately sniffing a yellow rose, richly textured oil painting",pickscore,4.0,0.6947556276529562,0.8876074172223101,0.003731745601031267,0.8644428465633545
+pickscore,parti_00555,the Taj Mahal at sunrise,hpsv2,4.0,0.4206391488507493,0.9817503138574757,0.050825316786104344,0.9798224901819137
+pickscore,parti_00555,the Taj Mahal at sunrise,imagereward,4.0,0.44173364193998077,0.9901818993262775,0.0459466447773926,0.9880315105105164
+pickscore,parti_00555,the Taj Mahal at sunrise,pickscore,4.0,0.37534898402463807,0.9546908173518682,0.06632524306502037,0.9532535763674168
+pickscore,parti_00674,an elder politician giving a campaign speech,hpsv2,4.0,0.34949405462658356,0.9336153914211216,0.006984319186631924,0.9204367730270937
+pickscore,parti_00674,an elder politician giving a campaign speech,imagereward,4.0,0.3591643574587322,0.9419873562659392,0.006248012832985903,0.9271482659702938
+pickscore,parti_00674,an elder politician giving a campaign speech,pickscore,4.0,0.3909315504145046,0.965398080201725,0.009833282805216222,0.9556792581452871
+pickscore,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,hpsv2,4.0,0.6337621631475984,0.9477395417223147,0.0010231522952972526,0.8633574373816485
+pickscore,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,imagereward,4.0,0.5892286578182541,0.9769037197674317,0.0028191666318314454,0.9434385619681137
+pickscore,parti_00708,A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.,pickscore,4.0,0.5206513290676269,0.998769096254445,0.000778976027710507,0.8851403891262236
+pickscore,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,hpsv2,4.0,0.39714621579632475,0.9692567401651186,0.005660394099285888,0.9524305174543274
+pickscore,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,imagereward,4.0,0.3380917929471041,0.9229809662616013,0.02331826934885519,0.9190396802830679
+pickscore,parti_00861,The trophy doesn't fit into the brown suitcase because it's too small,pickscore,4.0,0.447959411898034,0.9921715507335704,0.005911150732941711,0.9756660329914122
+pickscore,parti_00973,a view of the Milllenium Wheel from the Thames,hpsv2,4.0,0.38389151268729327,0.9607441701665858,0.03010751316879756,0.9575636893213139
+pickscore,parti_00973,a view of the Milllenium Wheel from the Thames,imagereward,4.0,0.38512813723848127,0.9615834867191722,0.03248381714228109,0.9586323791723789
+pickscore,parti_00973,a view of the Milllenium Wheel from the Thames,pickscore,4.0,0.3366879562929177,0.921613988261502,0.02104298123155507,0.9172550287648817
+pickscore,parti_00995,a red block to the left of a blue pyramid,hpsv2,4.0,0.5384346755534558,0.9957334240975672,0.004200804992912949,0.9725811671192018
+pickscore,parti_00995,a red block to the left of a blue pyramid,imagereward,4.0,0.5005431516209997,0.9999991487702765,0.023668441697086696,0.9957918929412466
+pickscore,parti_00995,a red block to the left of a blue pyramid,pickscore,4.0,0.39755970364459364,0.9695052018023105,0.004430313626922888,0.9481048025884302
