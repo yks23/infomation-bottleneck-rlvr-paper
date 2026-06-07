@@ -69,6 +69,7 @@ The transfer matrix is low-rank enough to visualize:
 ## Contents
 
 - `CONCLUSIONS.md`: concise claims, caveats, and takeaways.
+- `HANDOFF.md`: shortest integration entrypoint for collaborators.
 - `POSTER_TEXT.md`: text used for the poster story and talks.
 - `FIGURE_INDEX.md`: grouped figure/table list with suggested usage.
 - `FIGURE_CATALOG.md`: detailed caption, meaning, claim, and source for each figure.
