@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>为什么学术界的大模型数学RL没有像AlphaZero那样轻易解决？</title>
+  <title>为什么大模型数学RL没有像AlphaZero那样轻易解决？</title>
   <style>
     :root {
       --ink: #18202b;
@@ -1219,6 +1219,50 @@
       text-align: center;
     }
 
+    .slide.question-only.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(24px, 4vh, 42px);
+    }
+
+    .final-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(22px, 3vw, 42px);
+      height: calc(100vh - clamp(205px, 29vh, 275px));
+      margin-top: clamp(28px, 4vh, 42px);
+      align-items: stretch;
+    }
+
+    .final-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+      padding: clamp(32px, 4vw, 58px);
+    }
+
+    .final-panel h3 {
+      font-size: clamp(36px, 3.5vw, 54px);
+      margin-bottom: clamp(18px, 2.6vh, 30px);
+    }
+
+    .final-panel p {
+      font-size: clamp(25px, 2.35vw, 36px);
+      line-height: 1.34;
+      color: #29323a;
+    }
+
+    .closing-line {
+      margin-top: clamp(22px, 3.2vh, 36px);
+      font-size: clamp(27px, 2.8vw, 42px);
+      line-height: 1.24;
+      color: #162731;
+      max-width: min(1080px, 90vw);
+    }
+
     .guess-slide .grid {
       height: calc(100vh - clamp(165px, 23vh, 220px));
       align-items: stretch;
@@ -1340,7 +1384,7 @@
 <body>
 <main class="deck" id="deck">
   <section class="slide active question-only">
-    <h1>为什么学术界的大模型数学 RL 没有像 AlphaZero 那样轻易解决？</h1>
+    <h1>为什么大模型数学 RL 没有像 AlphaZero 那样轻易解决？</h1>
     <p class="presenters">汇报人：杨凯森，黄禹</p>
     <div class="footer"><span>Class presentation draft</span><span>1/17</span></div>
   </section>
@@ -1629,14 +1673,20 @@
 
   <section class="slide">
     <div class="kicker">Takeaway</div>
-    <h2>一句话总结</h2>
-    <p class="lead">AlphaZero 的强大来自开放式自博弈带来的持续信息流；固定数学数据集上的 RL 更像有限信息的锐化过程。</p>
-    <div class="grid cols-3">
-      <div class="card"><h3>Bounded</h3><p>每道题的信息积分有限。</p></div>
-      <div class="card"><h3>Additive</h3><p>题目之间相互作用弱时，总信息近似随题数增长。</p></div>
-      <div class="card"><h3>Geometric</h3><p>题目之间的 transfer 可以定义 prompt space geometry。</p></div>
+    <h2>最后回到一开始的问题</h2>
+    <div class="final-split">
+      <div class="card final-panel">
+        <h3>AlphaZero</h3>
+        <p>对手会随着自己变强而变强。</p>
+        <p>新的棋局、新的边界、新的胜负差异，会被自博弈持续制造出来。</p>
+      </div>
+      <div class="card final-panel">
+        <h3>固定数学题集</h3>
+        <p>题做不出来时，reward 几乎没有差异；题做出来后，reward 又很快失去差异。</p>
+        <p>RL 更像把一个宽分布压进少数稳定解法附近。</p>
+      </div>
     </div>
-    <p class="lead">谢谢大家。</p>
+    <p class="closing-line">所以问题不是“RL 有没有用”，而是：信息源会不会继续长出来。</p>
     <div class="footer"><span>End</span><span>17/17</span></div>
   </section>
 </main>
