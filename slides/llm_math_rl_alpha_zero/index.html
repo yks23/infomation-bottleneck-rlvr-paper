@@ -1,0 +1,1634 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>为什么学术界的大模型数学RL没有像AlphaZero那样轻易解决？</title>
+  <style>
+    :root {
+      --ink: #18202b;
+      --muted: #5f6875;
+      --paper: #f7f4ee;
+      --panel: #fffdf8;
+      --line: #ded6c7;
+      --red: #a84636;
+      --blue: #2f6384;
+      --green: #4d765c;
+      --gold: #b88435;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "Avenir Next", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: #111;
+      overflow: hidden;
+    }
+    .deck {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      background: var(--paper);
+    }
+    .slide {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      padding: 56px 72px 54px;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(24,32,43,.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(24,32,43,.03) 1px, transparent 1px),
+        var(--paper);
+      background-size: 34px 34px;
+    }
+    .slide.active { display: block; }
+    .kicker {
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+    h1, h2 {
+      margin: 0;
+      letter-spacing: 0;
+      line-height: 1.04;
+      font-weight: 820;
+    }
+    h1 {
+      font-size: clamp(48px, 6.1vw, 92px);
+      max-width: 1120px;
+    }
+    h2 {
+      font-size: clamp(34px, 4.2vw, 62px);
+      max-width: 1100px;
+    }
+    h3 {
+      font-size: 23px;
+      margin: 0 0 14px;
+      line-height: 1.22;
+    }
+    p {
+      font-size: 25px;
+      line-height: 1.45;
+      margin: 18px 0 0;
+      color: var(--muted);
+      max-width: 1020px;
+    }
+    .lead {
+      font-size: 30px;
+      line-height: 1.42;
+      color: #303844;
+      max-width: 1080px;
+    }
+    .grid {
+      display: grid;
+      gap: 26px;
+      margin-top: 34px;
+    }
+    .cols-2 { grid-template-columns: 1fr 1fr; }
+    .cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .card {
+      background: rgba(255,253,248,.84);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px 26px;
+      box-shadow: 0 12px 34px rgba(40,34,24,.08);
+    }
+    .card strong { color: var(--ink); }
+    .card p, li { font-size: 22px; line-height: 1.42; }
+    ul {
+      padding-left: 1.1em;
+      margin: 16px 0 0;
+      color: #34404d;
+    }
+    li { margin: 10px 0; }
+    .formula {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 28px;
+      color: #1f2a36;
+      background: #f0e9db;
+      border: 1px solid #dfd2bf;
+      border-radius: 8px;
+      padding: 18px 20px;
+      display: inline-block;
+      margin-top: 18px;
+    }
+    .image-row {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 28px;
+      align-items: center;
+      margin-top: 28px;
+      height: calc(100vh - 255px);
+    }
+    .figure {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 34px rgba(40,34,24,.08);
+    }
+    .figure img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .caption {
+      font-size: 16px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #eee4d2;
+      border: 1px solid #dbccb4;
+      color: #4f4130;
+      font-size: 15px;
+      font-weight: 750;
+      margin: 0 8px 8px 0;
+    }
+    .big-number {
+      font-size: 58px;
+      font-weight: 860;
+      color: var(--blue);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .eqbox {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 34px;
+    }
+    .axis {
+      height: 210px;
+      border-left: 2px solid #42505f;
+      border-bottom: 2px solid #42505f;
+      position: relative;
+      margin-top: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.12));
+    }
+    .line {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      height: 4px;
+      background: var(--blue);
+      top: 74px;
+      border-radius: 999px;
+    }
+    .curve {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 22px;
+      height: 150px;
+    }
+    .curve svg { width: 100%; height: 100%; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(7, 34px);
+      gap: 7px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .cell {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #dfd7c7;
+      border: 1px solid #c9bca7;
+    }
+    .r { background: #b8493a; }
+    .y { background: #d0a141; }
+    .watermelon {
+      position: relative;
+      width: 480px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 48%, #e64d5f 0 54%, #f5d7d6 55% 59%, #477a55 60% 100%);
+      margin: 34px auto 0;
+      box-shadow: inset -16px -22px 35px rgba(0,0,0,.16);
+    }
+    .seed {
+      position: absolute;
+      width: 14px;
+      height: 28px;
+      border-radius: 50% 50% 55% 55%;
+      background: #1c1b18;
+      transform: rotate(18deg);
+    }
+    .arrow {
+      text-align: center;
+      font-size: 42px;
+      color: var(--gold);
+      font-weight: 800;
+      margin-top: 18px;
+    }
+    .shrink-layout {
+      display: grid;
+      grid-template-columns: 1.18fr .82fr;
+      gap: clamp(22px, 3vw, 38px);
+      align-items: center;
+      height: calc(100vh - 220px);
+      margin-top: clamp(22px, 3vh, 34px);
+    }
+    .shrink-scene {
+      position: relative;
+      height: 100%;
+      min-height: 430px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(230, 77, 95, .08), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(247,252,249,.84));
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+    }
+    .melon-shell {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(52vw, 620px);
+      aspect-ratio: 1.58;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 48%, #e75a66 0 55%, #f7d8d5 56% 60%, #4d7d5c 61% 100%);
+      box-shadow: inset -22px -26px 42px rgba(25, 55, 40, .18), 0 22px 52px rgba(93, 118, 104, .12);
+      transform: translate(-50%, -50%) scale(1);
+      transform-origin: center;
+    }
+    .seed-map-final {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(44vw, 560px);
+      height: min(54vh, 390px);
+      transform: translate(-50%, -50%) scale(.72);
+      opacity: 0;
+      border-radius: 12px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(107, 137, 145, .24);
+      padding: 10px;
+      box-shadow: 0 18px 46px rgba(72, 90, 98, .16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .seed-map-final img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .seed-pin {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #2f6384;
+      box-shadow: 0 0 0 5px rgba(79, 131, 163, .13);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.4);
+    }
+    .slide.active .melon-shell {
+      animation: shrinkMelon 2.1s cubic-bezier(.22,.9,.25,1) .20s forwards;
+    }
+    .slide.active .seed-map-final {
+      animation: revealSeedMap 1.55s cubic-bezier(.22,.9,.25,1) 1.10s forwards;
+    }
+    .slide.active .seed-pin {
+      animation: seedPin 1.45s cubic-bezier(.2,.82,.28,1) 1.05s forwards;
+    }
+    .slide.active .seed-pin:nth-of-type(3) { animation-delay: 1.14s; }
+    .slide.active .seed-pin:nth-of-type(4) { animation-delay: 1.20s; }
+    .slide.active .seed-pin:nth-of-type(5) { animation-delay: 1.28s; }
+    .slide.active .seed-pin:nth-of-type(6) { animation-delay: 1.35s; }
+    .shrink-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 430px;
+    }
+    @keyframes shrinkMelon {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: saturate(1); }
+      58% { opacity: .92; transform: translate(-50%, -50%) scale(.58); filter: saturate(.92); }
+      100% { opacity: .14; transform: translate(-50%, -50%) scale(.26); filter: saturate(.55); }
+    }
+    @keyframes revealSeedMap {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.72); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    @keyframes seedPin {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.35); }
+      100% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
+    }
+    .footer {
+      position: absolute;
+      left: 72px;
+      right: 72px;
+      bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      color: #7a746b;
+      font-size: 14px;
+    }
+    .progress {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      height: 4px;
+      background: var(--red);
+      transition: width .15s ease;
+      z-index: 3;
+    }
+    .note {
+      position: absolute;
+      right: 72px;
+      top: 60px;
+      color: #887f72;
+      font-size: 14px;
+    }
+    .compact p, .compact li { font-size: 20px; }
+
+    /*
+      Visual refresh: "scholarly atlas".
+      The original content is preserved; this layer gives the deck a more
+      editorial classroom-presentation feel with restrained motion.
+    */
+    :root {
+      --ink: #15191e;
+      --muted: #545e67;
+      --paper: #f3efe6;
+      --panel: rgba(255, 252, 244, .74);
+      --line: rgba(75, 69, 57, .20);
+      --red: #8f2f2b;
+      --blue: #245a78;
+      --green: #3e6c55;
+      --gold: #a87327;
+      --wash-blue: rgba(36, 90, 120, .085);
+      --wash-red: rgba(143, 47, 43, .070);
+      --wash-green: rgba(62, 108, 85, .075);
+      --shadow-soft: 0 22px 56px rgba(39, 31, 20, .11);
+      --slide-padding-x: clamp(30px, 5vw, 78px);
+      --slide-padding-y: clamp(28px, 5.2vh, 58px);
+      --display: "Iowan Old Style", "Palatino Linotype", "Songti SC", "STSong", Georgia, serif;
+      --body: "Avenir Next", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--body);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(143, 47, 43, .22), transparent 31%),
+        radial-gradient(circle at 92% 100%, rgba(36, 90, 120, .20), transparent 32%),
+        #171514;
+    }
+
+    .deck {
+      background: #181614;
+      isolation: isolate;
+    }
+
+    .slide {
+      height: 100vh;
+      height: 100dvh;
+      padding: var(--slide-padding-y) var(--slide-padding-x) calc(var(--slide-padding-y) * .9);
+      background:
+        linear-gradient(90deg, rgba(39, 35, 28, .040) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(39, 35, 28, .034) 1px, transparent 1px),
+        radial-gradient(circle at 16% 18%, var(--wash-red), transparent 33%),
+        radial-gradient(circle at 88% 82%, var(--wash-blue), transparent 35%),
+        linear-gradient(135deg, #f8f5ee 0%, var(--paper) 52%, #ebe3d6 100%);
+      background-size: 34px 34px, 34px 34px, 100% 100%, 100% 100%, 100% 100%;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: clamp(12px, 2vw, 24px);
+      border: 1px solid rgba(55, 50, 42, .18);
+      pointer-events: none;
+    }
+
+    .slide::after {
+      content: "";
+      position: absolute;
+      right: clamp(26px, 4vw, 70px);
+      top: clamp(18px, 4vh, 48px);
+      width: clamp(70px, 9vw, 142px);
+      height: clamp(70px, 9vw, 142px);
+      border-radius: 50%;
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(143, 47, 43, .22) 49% 51%, transparent 52%),
+        linear-gradient(0deg, transparent 48%, rgba(36, 90, 120, .20) 49% 51%, transparent 52%),
+        radial-gradient(circle, transparent 52%, rgba(62, 108, 85, .20) 53% 56%, transparent 57%);
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      display: block;
+      animation: slideIn .38s ease-out both;
+    }
+
+    .slide.active > *:not(.footer) {
+      animation: riseIn .48s ease-out both;
+    }
+
+    .slide.active > *:nth-child(2) { animation-delay: .035s; }
+    .slide.active > *:nth-child(3) { animation-delay: .075s; }
+    .slide.active > *:nth-child(4) { animation-delay: .105s; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: clamp(12px, 2.2vh, 20px);
+      color: var(--red);
+      font-size: clamp(11px, 1.2vw, 13px);
+      font-weight: 850;
+      letter-spacing: .12em;
+    }
+
+    .kicker::before {
+      content: "";
+      width: clamp(32px, 5vw, 70px);
+      height: 1px;
+      background: currentColor;
+      opacity: .72;
+    }
+
+    h1, h2 {
+      font-family: var(--display);
+      font-weight: 620;
+      color: #11161b;
+      text-wrap: balance;
+    }
+
+    h1 {
+      font-size: clamp(42px, 6.4vw, 88px);
+      line-height: .98;
+      max-width: min(1120px, 92vw);
+    }
+
+    h2 {
+      font-size: clamp(32px, 4.6vw, 64px);
+      line-height: 1.02;
+      max-width: min(1120px, 92vw);
+    }
+
+    h3 {
+      font-family: var(--display);
+      font-size: clamp(19px, 2vw, 27px);
+      font-weight: 640;
+      color: #15191e;
+      letter-spacing: 0;
+    }
+
+    p {
+      font-size: clamp(18px, 2.05vw, 25px);
+      line-height: 1.46;
+      color: var(--muted);
+    }
+
+    .lead {
+      font-size: clamp(22px, 2.65vw, 32px);
+      line-height: 1.36;
+      color: #29323a;
+      max-width: min(1080px, 90vw);
+    }
+
+    .grid {
+      gap: clamp(16px, 2vw, 28px);
+      margin-top: clamp(24px, 4vh, 38px);
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 253, 247, .82), rgba(247, 241, 229, .63));
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      padding: clamp(18px, 2.2vw, 29px);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(7px);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--red), var(--blue));
+      opacity: .78;
+    }
+
+    .card p, li {
+      font-size: clamp(17px, 1.75vw, 22px);
+      line-height: 1.43;
+    }
+
+    .formula {
+      max-width: 100%;
+      font-size: clamp(18px, 2.15vw, 28px);
+      color: #17202a;
+      background:
+        linear-gradient(180deg, rgba(245, 238, 223, .92), rgba(233, 221, 199, .80));
+      border: 1px solid rgba(80, 70, 50, .22);
+      border-radius: 3px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.52);
+      white-space: normal;
+    }
+
+    .image-row {
+      gap: clamp(20px, 2.6vw, 34px);
+      height: calc(100vh - clamp(218px, 29vh, 270px));
+      min-height: 0;
+    }
+
+    .figure {
+      min-height: 0;
+      background:
+        linear-gradient(180deg, rgba(255, 253, 247, .92), rgba(246, 239, 225, .82));
+      border: 1px solid rgba(71, 63, 49, .19);
+      border-radius: 4px;
+      padding: clamp(8px, 1.2vw, 14px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .figure img {
+      filter: saturate(.94) contrast(1.03);
+    }
+
+    .tag {
+      border-radius: 3px;
+      background: rgba(232, 221, 199, .78);
+      color: #514434;
+      font-size: clamp(12px, 1.25vw, 15px);
+      letter-spacing: .02em;
+    }
+
+    .big-number {
+      font-family: var(--display);
+      font-size: clamp(42px, 5.6vw, 64px);
+      font-weight: 680;
+      color: var(--blue);
+    }
+
+    .eqbox {
+      gap: clamp(16px, 2vw, 26px);
+      margin-top: clamp(24px, 4vh, 38px);
+    }
+
+    .axis {
+      border-color: rgba(35, 45, 55, .72);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.50), rgba(255,255,255,.12)),
+        repeating-linear-gradient(90deg, rgba(36, 90, 120, .08) 0 1px, transparent 1px 34px);
+    }
+
+    .line {
+      background: linear-gradient(90deg, var(--blue), var(--green));
+    }
+
+    .board {
+      padding: 18px;
+      width: max-content;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(36, 90, 120, .11);
+      border: 1px solid rgba(36, 90, 120, .22);
+      border-radius: 4px;
+    }
+
+    .cell {
+      box-shadow: inset 0 2px 4px rgba(0,0,0,.08);
+    }
+
+    .watermelon {
+      max-width: min(480px, 74vw);
+      max-height: min(300px, 40vh);
+      aspect-ratio: 8 / 5;
+      width: min(480px, 74vw);
+      height: auto;
+      border-radius: 50%;
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    .arrow {
+      font-family: var(--display);
+      font-size: clamp(28px, 4.2vw, 46px);
+      color: var(--gold);
+    }
+
+    .footer {
+      left: var(--slide-padding-x);
+      right: var(--slide-padding-x);
+      bottom: clamp(16px, 2.3vh, 26px);
+      color: rgba(65, 58, 47, .72);
+      font-size: clamp(11px, 1.1vw, 14px);
+      letter-spacing: .02em;
+    }
+
+    .footer::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -12px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(143,47,43,.45), transparent 45%, rgba(36,90,120,.32));
+    }
+
+    .progress {
+      height: 5px;
+      background: linear-gradient(90deg, var(--red), var(--gold), var(--blue));
+      box-shadow: 0 -1px 12px rgba(143,47,43,.22);
+    }
+
+    .caption {
+      font-size: clamp(13px, 1.2vw, 16px);
+    }
+
+    .compact p, .compact li {
+      font-size: clamp(16px, 1.55vw, 20px);
+    }
+
+    .slide:nth-of-type(1) {
+      background:
+        radial-gradient(circle at 76% 26%, rgba(143, 47, 43, .13), transparent 32%),
+        radial-gradient(circle at 20% 82%, rgba(36, 90, 120, .14), transparent 33%),
+        linear-gradient(90deg, rgba(39, 35, 28, .038) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(39, 35, 28, .032) 1px, transparent 1px),
+        linear-gradient(135deg, #faf7f1 0%, #f0eadf 56%, #e3d8c8 100%);
+      background-size: 100% 100%, 100% 100%, 34px 34px, 34px 34px, 100% 100%;
+    }
+
+    .slide:nth-of-type(1) h1 {
+      max-width: 1040px;
+      margin-top: clamp(18px, 4vh, 40px);
+    }
+
+    .slide:nth-of-type(1) .grid {
+      max-width: 1120px;
+    }
+
+    @keyframes slideIn {
+      from { opacity: .86; transform: scale(.992); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); filter: saturate(.97); }
+      50% { transform: scale(1.018); filter: saturate(1.05); }
+    }
+
+    @media (max-height: 720px) {
+      .slide {
+        padding-top: clamp(22px, 4vh, 36px);
+        padding-bottom: clamp(22px, 4vh, 36px);
+      }
+      .lead { font-size: clamp(19px, 2.25vw, 26px); }
+      p { margin-top: 12px; }
+      .grid { margin-top: 22px; }
+      .image-row { height: calc(100vh - 218px); }
+    }
+
+    @media (max-height: 600px) {
+      .footer { display: none; }
+      .image-row { height: calc(100vh - 175px); }
+      .card { padding: 14px 16px; }
+      .formula { padding: 12px 14px; }
+    }
+
+    @media (max-width: 860px) {
+      .cols-2, .cols-3, .eqbox, .image-row {
+        grid-template-columns: 1fr;
+      }
+      .image-row {
+        height: auto;
+      }
+      .figure {
+        height: min(42vh, 360px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+    /* Final light classroom style: airy, pale, figure-forward. */
+    :root {
+      --ink: #13212b;
+      --muted: #596b76;
+      --paper: #fbfcf9;
+      --panel: rgba(255, 255, 255, .86);
+      --line: rgba(121, 145, 151, .24);
+      --red: #b65c55;
+      --blue: #4f83a3;
+      --green: #74a187;
+      --gold: #c99b51;
+      --wash-blue: rgba(140, 193, 216, .20);
+      --wash-red: rgba(232, 170, 160, .16);
+      --wash-green: rgba(165, 211, 189, .18);
+      --shadow-soft: 0 14px 32px rgba(81, 96, 102, .10);
+      --display: "Avenir Next", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --body: "Avenir Next", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 12% 8%, rgba(192, 225, 238, .55), transparent 34%),
+        radial-gradient(circle at 88% 92%, rgba(222, 235, 214, .55), transparent 32%),
+        #f6faf8;
+    }
+
+    .deck {
+      background: #f7fbfa;
+    }
+
+    .slide {
+      background:
+        radial-gradient(circle at 7% 14%, var(--wash-blue), transparent 34%),
+        radial-gradient(circle at 93% 80%, var(--wash-green), transparent 36%),
+        linear-gradient(90deg, rgba(89, 120, 126, .035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(89, 120, 126, .030) 1px, transparent 1px),
+        linear-gradient(135deg, #ffffff 0%, #f6fbfa 52%, #eef6f2 100%);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px, 100% 100%;
+    }
+
+    .slide::before {
+      inset: clamp(14px, 2vw, 22px);
+      border: 1px solid rgba(112, 145, 153, .16);
+      border-radius: 14px;
+    }
+
+    .slide::after {
+      right: clamp(24px, 4vw, 64px);
+      top: clamp(22px, 4vh, 52px);
+      opacity: .28;
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(79, 131, 163, .28) 49% 51%, transparent 52%),
+        linear-gradient(0deg, transparent 48%, rgba(116, 161, 135, .24) 49% 51%, transparent 52%),
+        radial-gradient(circle, transparent 52%, rgba(182, 92, 85, .18) 53% 56%, transparent 57%);
+    }
+
+    .kicker {
+      color: #6e928f;
+      letter-spacing: .16em;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--display);
+      font-weight: 760;
+      color: #14222c;
+    }
+
+    h1 {
+      font-size: clamp(42px, 6.0vw, 82px);
+    }
+
+    h2 {
+      font-size: clamp(31px, 4.05vw, 58px);
+    }
+
+    p {
+      color: var(--muted);
+    }
+
+    .lead {
+      color: #2a3a44;
+    }
+
+    .card {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(250,253,251,.78));
+      border-color: rgba(106, 134, 139, .22);
+      border-radius: 8px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card::before {
+      width: 0;
+    }
+
+    .formula {
+      background: rgba(237, 247, 244, .78);
+      border-color: rgba(109, 155, 152, .24);
+      border-radius: 8px;
+    }
+
+    .figure {
+      background: rgba(255,255,255,.90);
+      border-color: rgba(107, 137, 145, .20);
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(72, 90, 98, .09);
+    }
+
+    .figure img {
+      filter: saturate(1.02) contrast(1.01);
+    }
+
+    .progress {
+      background: linear-gradient(90deg, #86b8d4, #abd7c2, #efc989);
+      box-shadow: none;
+    }
+
+    .footer {
+      color: rgba(72, 93, 99, .65);
+    }
+
+    .footer::before {
+      background: linear-gradient(90deg, rgba(93, 148, 176, .35), transparent 50%, rgba(129, 177, 151, .35));
+    }
+
+    .tag {
+      background: rgba(238, 248, 244, .86);
+      border-color: rgba(115, 161, 135, .28);
+      color: #41665b;
+    }
+
+    .big-number {
+      color: #5b91ad;
+    }
+
+    .hero-visual {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: clamp(18px, 2.2vw, 28px);
+      align-items: stretch;
+      height: calc(100vh - clamp(225px, 29vh, 278px));
+      margin-top: clamp(22px, 3vh, 32px);
+    }
+
+    .figure-gallery {
+      display: grid;
+      gap: clamp(14px, 1.6vw, 22px);
+      margin-top: clamp(20px, 2.8vh, 30px);
+      height: calc(100vh - clamp(170px, 23vh, 230px));
+      min-height: 0;
+    }
+
+    .figure-gallery.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .figure-gallery.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .figure-gallery .figure {
+      height: 100%;
+      min-height: 0;
+    }
+
+    .figure-card {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      min-height: 0;
+      gap: 8px;
+    }
+
+    .figure-card .figure {
+      height: auto;
+    }
+
+    .fig-note {
+      margin: 0;
+      font-size: clamp(12px, 1.05vw, 15px);
+      color: #5f7479;
+      line-height: 1.28;
+      text-align: center;
+    }
+
+    .wide-figure {
+      height: calc(100vh - clamp(175px, 23vh, 232px));
+      margin-top: clamp(20px, 3vh, 30px);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: clamp(8px, 1.1vw, 14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 28px rgba(72, 90, 98, .09);
+      overflow: hidden;
+    }
+
+    .wide-figure img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .strip-figure {
+      height: calc(100vh - clamp(285px, 39vh, 360px));
+    }
+
+    .mini-proof {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(10px, 1.3vw, 16px);
+      margin-top: clamp(18px, 2.5vh, 28px);
+    }
+
+    .mini-proof .card {
+      padding: clamp(14px, 1.7vw, 20px);
+    }
+
+    .mini-proof h3 {
+      font-size: clamp(16px, 1.55vw, 20px);
+      margin-bottom: 8px;
+    }
+
+    .mini-proof p {
+      font-size: clamp(14px, 1.25vw, 17px);
+      margin-top: 6px;
+    }
+
+    .slide:nth-of-type(1) {
+      background:
+        radial-gradient(circle at 72% 22%, rgba(181, 220, 235, .44), transparent 36%),
+        radial-gradient(circle at 22% 84%, rgba(216, 235, 220, .42), transparent 34%),
+        linear-gradient(90deg, rgba(89, 120, 126, .032) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(89, 120, 126, .028) 1px, transparent 1px),
+        linear-gradient(135deg, #ffffff 0%, #f8fcfb 54%, #eef7f2 100%);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px, 100% 100%;
+    }
+
+    .slide:nth-of-type(1) .card {
+      background: rgba(255,255,255,.72);
+    }
+
+    .question-only {
+      display: none;
+      place-items: center;
+      text-align: center;
+    }
+
+    .question-only.active {
+      display: grid;
+    }
+
+    .question-only .kicker {
+      position: absolute;
+      top: clamp(42px, 7vh, 70px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .question-only .kicker::before {
+      display: none;
+    }
+
+    .question-only h1 {
+      max-width: min(1040px, 86vw);
+      font-size: clamp(46px, 6.7vw, 88px);
+      line-height: 1.05;
+      margin: 0;
+    }
+
+    /* Final typography/layout pass: clean lecture slides, no decorative frame. */
+    :root {
+      --title-font: "AR PL UKai CN", "KaiTi", "STKaiti", "Kaiti SC", serif;
+      --text-font: "WenQuanYi Micro Hei", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      --ink: #10202b;
+      --muted: #405966;
+      --paper: #f7fbfa;
+      --panel: #ffffff;
+      --line: #d7e7e3;
+      --accent: #5f9db5;
+      --accent-2: #8bbf9f;
+    }
+
+    body,
+    .deck,
+    .slide {
+      font-family: var(--text-font);
+      background: #f7fbfa;
+      color: var(--ink);
+    }
+
+    .slide {
+      padding: clamp(34px, 5vh, 56px) clamp(44px, 5.4vw, 78px) clamp(36px, 5vh, 54px);
+      background:
+        linear-gradient(90deg, rgba(95, 157, 181, .055) 0 10px, transparent 10px),
+        linear-gradient(180deg, #ffffff 0%, #f7fbfa 100%);
+    }
+
+    .slide::before,
+    .slide::after {
+      display: none;
+    }
+
+    .kicker,
+    .footer,
+    p,
+    li,
+    .lead,
+    .fig-note,
+    .tag,
+    .caption {
+      font-family: var(--text-font);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--title-font);
+      color: var(--ink);
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(58px, 7.1vw, 100px);
+      line-height: 1.06;
+      max-width: min(1200px, 90vw);
+    }
+
+    h2 {
+      font-size: clamp(44px, 5.1vw, 72px);
+      line-height: 1.08;
+      max-width: min(1180px, 92vw);
+    }
+
+    h3 {
+      font-size: clamp(28px, 2.35vw, 36px);
+      line-height: 1.18;
+      margin-bottom: 12px;
+    }
+
+    .kicker {
+      font-size: clamp(14px, 1.15vw, 17px);
+      letter-spacing: .12em;
+      color: #5f8d94;
+      margin-bottom: clamp(14px, 2vh, 22px);
+      font-weight: 800;
+    }
+
+    .kicker::before {
+      display: none;
+    }
+
+    p {
+      font-size: clamp(23px, 2.05vw, 30px);
+      line-height: 1.38;
+      color: var(--muted);
+      margin-top: 14px;
+    }
+
+    .lead {
+      font-size: clamp(30px, 2.8vw, 40px);
+      line-height: 1.34;
+      color: #233944;
+    }
+
+    .grid {
+      gap: clamp(18px, 2vw, 28px);
+      margin-top: clamp(24px, 3.4vh, 36px);
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: none;
+      padding: clamp(22px, 2.3vw, 34px);
+    }
+
+    .card p,
+    li {
+      font-size: clamp(22px, 1.85vw, 29px);
+      line-height: 1.36;
+    }
+
+    .formula {
+      font-size: clamp(22px, 2vw, 31px);
+      background: #eef8f5;
+      border: 1px solid #cfe4dc;
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+
+    .figure {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: none;
+      padding: clamp(8px, 1vw, 12px);
+    }
+
+    .figure-gallery {
+      gap: clamp(16px, 1.8vw, 24px);
+      height: calc(100vh - clamp(180px, 23vh, 235px));
+      margin-top: clamp(18px, 2.7vh, 28px);
+    }
+
+    .hero-visual,
+    .image-row {
+      height: calc(100vh - clamp(210px, 27vh, 270px));
+      gap: clamp(20px, 2.4vw, 34px);
+    }
+
+    .fig-note {
+      font-size: clamp(17px, 1.35vw, 22px);
+      line-height: 1.28;
+      color: #526a74;
+    }
+
+    .footer {
+      font-size: clamp(13px, 1vw, 16px);
+      color: #82969c;
+      bottom: clamp(14px, 2vh, 24px);
+    }
+
+    .footer::before {
+      display: none;
+    }
+
+    .progress {
+      height: 6px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .question-only,
+    .question-only.active {
+      text-align: center;
+    }
+
+    .question-only h1 {
+      font-size: clamp(64px, 7.4vw, 104px);
+      line-height: 1.12;
+      max-width: min(1180px, 88vw);
+      margin: 0 auto;
+    }
+
+    .presenters {
+      margin: clamp(28px, 4.5vh, 46px) auto 0;
+      max-width: min(900px, 78vw);
+      color: #405966;
+      font-size: clamp(28px, 2.6vw, 42px);
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .question-only .kicker {
+      top: clamp(46px, 7vh, 78px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      transform: none;
+      text-align: center;
+    }
+
+    .guess-slide .grid {
+      height: calc(100vh - clamp(165px, 23vh, 220px));
+      align-items: stretch;
+    }
+
+    .guess-slide .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(34px, 4vw, 58px);
+    }
+
+    .guess-slide h3 {
+      font-size: clamp(38px, 3.4vw, 52px);
+      line-height: 1.16;
+      margin-bottom: clamp(18px, 2.8vh, 32px);
+    }
+
+    .guess-slide .card p {
+      font-size: clamp(30px, 2.55vw, 40px);
+      line-height: 1.38;
+      margin-top: clamp(14px, 2.2vh, 24px);
+    }
+
+    .kicker {
+      display: none !important;
+    }
+
+    .slide,
+    h1, h2, h3,
+    p, li,
+    .lead,
+    .card,
+    .fig-note,
+    .caption,
+    .formula,
+    .presenters {
+      text-align: center;
+    }
+
+    .card p,
+    .lead,
+    p,
+    ul {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    ul {
+      padding-left: 0;
+      list-style-position: inside;
+    }
+
+    div.formula,
+    .card > .formula {
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .footer {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .footer span:first-child {
+      display: none;
+    }
+
+    @media (max-height: 720px) {
+      .figure-gallery, .wide-figure, .hero-visual {
+        height: calc(100vh - 190px);
+      }
+      .mini-proof {
+        display: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .figure-gallery.two,
+      .figure-gallery.three,
+      .hero-visual {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .mini-proof {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media print {
+      body { overflow: visible; background: white; }
+      .deck { height: auto; }
+      .slide {
+        display: block !important;
+        position: relative;
+        page-break-after: always;
+        width: 100vw;
+        height: 100vh;
+      }
+      .melon-shell {
+        animation: none !important;
+        opacity: .14 !important;
+        transform: translate(-50%, -50%) scale(.26) !important;
+      }
+      .seed-map-final {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: translate(-50%, -50%) scale(1) !important;
+      }
+      .seed-pin { display: none !important; }
+      .progress { display: none; }
+    }
+  </style>
+</head>
+<body>
+<main class="deck" id="deck">
+  <section class="slide active question-only">
+    <h1>为什么学术界的大模型数学 RL 没有像 AlphaZero 那样轻易解决？</h1>
+    <p class="presenters">汇报人：杨凯森，黄禹</p>
+    <div class="footer"><span>Class presentation draft</span><span>1</span></div>
+  </section>
+
+  <section class="slide guess-slide">
+    <div class="kicker">Two tempting explanations</div>
+    <h2>两个看起来很合理的猜测</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>猜测 1：状态 / 动作空间太大？</h3>
+        <p>围棋只有 361 个格子，而大模型词表可以有 16 万 token。</p>
+        <p>是不是因为搜索空间太大，所以 RL 很难像 AlphaZero 那样迭代？</p>
+      </div>
+      <div class="card">
+        <h3>猜测 2：合法性约束太弱？</h3>
+        <p>围棋每一步几乎都是合法落子。</p>
+        <p>而语言模型会写出很多非法表达、无意义推导、格式错误答案。</p>
+      </div>
+    </div>
+    <div class="footer"><span>Motivation</span><span>2</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Why these are probably not the core</div>
+    <h2>这两个猜测都可以被工程化地压低</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>词表维度可以收缩</h3>
+        <p>模型词表可以很大，但数学推理真正需要活跃保留的符号集合小得多。</p>
+        <p>如果只考虑数学符号和推理格式，几百个 token 量级就能覆盖相当多场景。</p>
+        <div class="formula">160k tokens -> ~300 math tokens</div>
+      </div>
+      <div class="card">
+        <h3>合法性可以交给编译器</h3>
+        <p>可以接入 Lean / parser / 类型检查器，在生成过程中做静态检查。</p>
+        <p>这样模型不一定能写出正确证明，但至少可以被限制在合法表达附近。</p>
+        <div class="formula">LM + compiler feedback</div>
+      </div>
+    </div>
+    <div class="footer"><span>Engineering is not enough</span><span>3</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Main thesis</div>
+    <h2>学术界的大模型数学 RL，多在固定大小数据集上实验</h2>
+    <div class="image-row">
+      <div class="figure"><img src="assets/bounded_information_budget.png" alt="bounded information budget"></div>
+      <div>
+        <h3>固定题集意味着固定信息源</h3>
+        <p>给定训练集 D = {q_1, ..., q_n}，RL 反复在这些题目上 rollout，并用 verifier reward 更新模型。</p>
+        <p>如果每道题 q_i 的信息积分有上限 C_i，那么整个固定数据集的信息量也有上限。</p>
+        <div class="formula">A_D(T) = Σ_i A_i(T) ≤ Σ_i C_i</div>
+        <p>左图展示的是每个 source prompt 已实现的信息积分与理论上限。</p>
+      </div>
+    </div>
+    <div class="footer"><span>Claim</span><span>4</span></div>
+  </section>
+
+  <section class="slide compact">
+    <div class="kicker">Information metric</div>
+    <h2>我们怎么定义 RL 的平均信息量？</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>给定题目和 rollout</h3>
+        <p>题目 q_i，训练 step t 的模型是 π_t。</p>
+        <p>一次 rollout 是从当前模型采样一条解答轨迹。</p>
+        <div class="formula">τ_i(t) ~ π_t(. | q_i)</div>
+        <p>verifier 给出 reward。</p>
+        <div class="formula">R_i(t)=r(q_i,τ_i(t))</div>
+      </div>
+      <div class="card">
+        <h3>一次 rollout 的平均信息量</h3>
+        <p>先把 reward 仿射变换到 0-1，避免不同 reward 尺度不可比。</p>
+        <div class="formula">R01_i(t)=(R_i(t)-R_min)/(R_max-R_min)</div>
+        <p>一次 rollout 属于当前 reward 分布；该分布的方差就是它对应的平均信息量。</p>
+        <div class="formula">I_i(t)=V[R01_i(t)]</div>
+        <p>二值 reward 时：</p>
+        <div class="formula">I_i(t)=p_i(t)(1-p_i(t))≤1/4</div>
+      </div>
+      <div class="card">
+        <h3>信息积分</h3>
+        <p>沿训练步数累加，就得到题目 q_i 的信息积分。</p>
+        <div class="formula">A_i(T)=Σ_{t=0}^{T-1} I_i(t)</div>
+        <p>固定数据集 D 的总信息积分：</p>
+        <div class="formula">A_D(T)=Σ_{q_i∈D} A_i(T)</div>
+      </div>
+    </div>
+    <p class="lead">如果 p_i(t) 接近 0 或 1，rollout reward 几乎不再有差异，I_i(t) 接近 0；只有 p_i(t) 接近 1/2 时，每次 rollout 的平均信息量最大。</p>
+    <div class="footer"><span>Metric</span><span>5</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Self-play baseline</div>
+    <h2>我们先看 AlphaZero：它为什么不会很快耗尽信息？</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>背景：自博弈 + MCTS</h3>
+        <p>当前 policy/value network 通过 MCTS 搜索来落子。</p>
+        <p>模型和自己对弈，胜负结果再训练新的 policy/value network。</p>
+        <p>新模型继续成为下一轮自己的对手，数据分布会被不断刷新。</p>
+        <div class="board">
+          <span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+          <span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell r"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+          <span class="cell"></span><span class="cell"></span><span class="cell y"></span><span class="cell r"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+          <span class="cell"></span><span class="cell r"></span><span class="cell y"></span><span class="cell y"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+          <span class="cell y"></span><span class="cell r"></span><span class="cell r"></span><span class="cell y"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Connect Four 作为例子</h3>
+        <p>自博弈里双方实力接近时，结果基本是一半正样本、一半负样本。</p>
+        <div class="formula">p(win)≈1/2, I_t=V[R_t]≈1/4</div>
+        <p>也就是说，每一步 rollout 的平均信息量几乎保持最大。</p>
+        <div class="axis">
+          <div class="line"></div>
+          <div class="curve">
+            <svg viewBox="0 0 400 150" preserveAspectRatio="none">
+              <path d="M0 75 C80 72, 120 77, 200 74 S330 76, 400 73" fill="none" stroke="#2f6384" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <p class="caption">示意：self-play 持续制造边界状态，reward variance 不会像固定题集那样自然清零。</p>
+      </div>
+    </div>
+    <div class="footer"><span>Classic RL</span><span>6</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">One math problem</div>
+    <h2>那么在数学题上呢？先看数据集只有 1 道题</h2>
+    <div class="wide-figure">
+      <img src="assets/completed_problem_H_p_subplots_top50.png" alt="DAPO-17k completed single-question sweeps">
+    </div>
+    <p class="fig-note">DAPO-17k completed single-question sweeps top-50：每个小图都是“只训练这一道题”的独立实验；蓝线是 H(p)，橙虚线是 p。p 接近 1 后，信息量迅速回到 0。</p>
+    <div class="footer"><span>Single prompt</span><span>7</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Per-prompt trajectories</div>
+    <h2>再看数据集有多道题的情况</h2>
+    <div class="wide-figure">
+      <img src="assets/dapo17k_p_H_top30_multitask.png" alt="DAPO-17k pass rate and information trajectories">
+    </div>
+    <p class="fig-note">DAPO-17k sweep 前 30 个题目：上半部分是每题 pass-rate p 的轨迹，下半部分是同一批题的信息量 H / variance 轨迹。多题数据集更像若干有限预算的叠加。</p>
+    <div class="footer"><span>Per-prompt dynamics</span><span>10</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Multi-problem dynamics</div>
+    <h2>多道题：多数信号近似可加，但相互作用较弱</h2>
+    <div class="grid cols-2" style="height: calc(100vh - 205px);">
+      <div class="figure"><img src="assets/diag_vs_offdiag_transfer_histogram.png" alt="diagonal vs off diagonal transfer"></div>
+      <div class="figure"><img src="assets/additivity_summary_bars.png" alt="additivity summary"></div>
+    </div>
+    <p class="lead">如果题目之间相互作用弱，那么增加题数可以增加总信息量；但总上限仍然随固定题集规模受限。</p>
+    <div class="footer"><span>Additivity</span><span>10</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Distance 1</div>
+    <h2>距离一：用性能向量</h2>
+    <div class="image-row">
+      <div class="figure"><img src="assets/sparse_delta_p_common_heatmap.png" alt="source to target performance matrix"></div>
+      <div>
+        <h3>每一行就是一道题的 fingerprint</h3>
+        <p>训练题目 i，然后在同一组 target / anchor 上测试性能。</p>
+        <div class="formula">x_i=(p_i1,p_i2,...,p_in)</div>
+        <p>如果两道题改善的是同一批 target，它们的方向相近。</p>
+        <div class="formula">d_cos(i,j)=1-cos(x_i,x_j)</div>
+        <p>这给出一个近似无向的题目距离空间。</p>
+      </div>
+    </div>
+    <div class="footer"><span>Distance from vectors</span><span>11</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Distance 2</div>
+    <h2>距离二：用自归一化迁移</h2>
+    <div class="figure-gallery three">
+      <div class="figure-card">
+        <div class="figure"><img src="assets/sparse_positive_delta_p_common_heatmap.png" alt="positive transfer heatmap"></div>
+        <p class="fig-note">p_ij：训练 i 后，j 的性能提升。</p>
+      </div>
+      <div class="figure-card">
+        <div class="figure"><img src="assets/sparse_source_transfer_summary.png" alt="source transfer summary"></div>
+        <p class="fig-note">p_ii：训练 i 后，i 自己的提升；用它归一化不同 source。</p>
+      </div>
+      <div class="figure-card">
+        <div class="figure"><img src="assets/anchor_knn_graph.png" alt="anchor knn graph"></div>
+        <p class="fig-note">R_ij 越大，i 对 j 的外溢越强；保留大边即可画图。</p>
+      </div>
+    </div>
+    <p class="lead">核心量很简单：R_ij = p_ij / p_ii。它天然是有方向的；如果一定要对称距离，可以再把 R_ij 和 R_ji 合并。</p>
+    <div class="footer"><span>Normalized transfer</span><span>12</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Sharpness and geometry</div>
+    <h2>收缩和几何可以同时画出来</h2>
+    <div class="grid cols-2" style="height: calc(100vh - 205px);">
+      <div class="figure"><img src="assets/sparse_action_entropy_per_token_heatmap.png" alt="action entropy per token heatmap"></div>
+      <div class="figure"><img src="assets/seed_geometry_sharpness_embedding.png" alt="seed geometry sharpness embedding"></div>
+    </div>
+    <p class="lead">左边看收缩，右边看题目在 transfer space 中的位置。几何关系告诉我们哪些题可以互相带动。</p>
+    <div class="footer"><span>Dataset geometry</span><span>13</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Watermelon picture</div>
+    <h2>固定数据集上的 RL：把西瓜缩成籽</h2>
+    <div class="shrink-layout">
+      <div class="shrink-scene">
+        <div class="melon-shell"></div>
+        <div class="seed-map-final">
+          <img src="assets/seed_geometry_sharpness_embedding.png" alt="seed geometry as watermelon seeds">
+        </div>
+        <span class="seed-pin" style="--dx: -180px; --dy: -112px;"></span>
+        <span class="seed-pin" style="--dx: 116px; --dy: -126px;"></span>
+        <span class="seed-pin" style="--dx: -88px; --dy: 94px;"></span>
+        <span class="seed-pin" style="--dx: 196px; --dy: 88px;"></span>
+      </div>
+      <div class="card shrink-copy">
+        <h3>每个籽是一道题</h3>
+        <p>原始模型是一个宽的输出分布。</p>
+        <p>固定题集上的 RL 会降低 action entropy，把概率质量收缩到若干个题目解法附近。</p>
+        <p>这些籽之间的距离，就是刚才由 transfer 定义出的数据集几何。</p>
+      </div>
+    </div>
+    <div class="footer"><span>Shrinkage metaphor</span><span>14</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">How to get more information</div>
+    <h2>如果固定题集信息有限，怎么增加信息？</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>更多相对独立的题</h3>
+        <p>如果题目基本独立，增加题数会近似增加总信息预算。</p>
+      </div>
+      <div class="card">
+        <h3>更丰富的 reward 信号</h3>
+        <p>不仅看最终答案，还看 proof state、Lean 检查、步骤级 reward、partial credit。</p>
+      </div>
+      <div class="card">
+        <h3>生成式环境</h3>
+        <p>Diffusion / theorem generation / AI task generation 可以不断制造新边界。</p>
+      </div>
+    </div>
+    <p class="lead">也就是说，未来真正需要的是会自我生成任务、验证任务、更新任务分布的系统。</p>
+    <div class="footer"><span>Beyond fixed datasets</span><span>15</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Takeaway</div>
+    <h2>一句话总结</h2>
+    <p class="lead">AlphaZero 的强大来自开放式自博弈带来的持续信息流；固定数学数据集上的 RL 更像有限信息的锐化过程。</p>
+    <div class="grid cols-3">
+      <div class="card"><h3>Bounded</h3><p>每道题的信息积分有限。</p></div>
+      <div class="card"><h3>Additive</h3><p>题目之间相互作用弱时，总信息近似随题数增长。</p></div>
+      <div class="card"><h3>Geometric</h3><p>题目之间的 transfer 可以定义 prompt space geometry。</p></div>
+    </div>
+    <p class="lead">谢谢大家。</p>
+    <div class="footer"><span>End</span><span>16</span></div>
+  </section>
+</main>
+<div class="progress" id="progress"></div>
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  slides.forEach((slide, i) => {
+    const footer = slide.querySelector('.footer');
+    if (!footer) return;
+    const slots = footer.querySelectorAll('span');
+    if (slots.length >= 2) slots[slots.length - 1].textContent = `${i + 1}/${slides.length}`;
+  });
+  let idx = 0;
+  const progress = document.getElementById('progress');
+  function show(next) {
+    idx = Math.max(0, Math.min(slides.length - 1, next));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    progress.style.width = `${((idx + 1) / slides.length) * 100}%`;
+    location.hash = String(idx + 1);
+  }
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) show(idx + 1);
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) show(idx - 1);
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length - 1);
+  });
+  window.addEventListener('hashchange', () => {
+    const n = Number(location.hash.replace('#', ''));
+    if (Number.isFinite(n) && n >= 1 && n <= slides.length) show(n - 1);
+  });
+  const initial = Number(location.hash.replace('#', ''));
+  show(Number.isFinite(initial) && initial > 0 ? initial - 1 : 0);
+</script>
+</body>
+</html>
