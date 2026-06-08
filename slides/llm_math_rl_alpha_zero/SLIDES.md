@@ -196,7 +196,50 @@ Message:
 
 The HTML slide uses a simple animation: the watermelon shrinks and the geometry embedding appears as the final seed map.
 
-### 14. How to Get More Information
+### 14. Diffusion RL Experiment
+
+Use:
+
+- `assets/diffusion_final_image_grid.png`
+
+Message:
+
+> The diffusion version is the same information-bottleneck story with a different rollout object. A math problem becomes a text prompt, a rollout becomes a generated image / denoising trajectory, and a binary verifier becomes continuous reward channels such as ImageReward, PickScore, and HPSv2.
+
+Formula:
+
+```text
+c_i -> x ~ pi_t(. | c_i) -> R(c_i, x)
+I_i(t) = Var_x[R(c_i, x)]
+```
+
+Experiment setting:
+
+- SDXL + TRL DDPO + LoRA.
+- 10 prompt-balanced setup.
+- Conditions: No-RL, IR-only, PS-only, IR+PS.
+- Held-out evaluator: HPSv2.
+
+### 15. Diffusion Information Results
+
+Use:
+
+- `assets/diffusion_cross_reward_matrix_final_z.png`
+- `assets/diffusion_final_active_channel_information.png`
+- `assets/diffusion_active_iacc_vs_hpsv2.png`
+
+Message:
+
+> Multi-reward feedback is a wider information channel. IR+PS is not strictly better than the strongest single reward on held-out HPSv2, but it gives the most balanced reward profile and the highest active accessible information.
+
+Careful wording:
+
+- All RL conditions improve held-out HPSv2 over No-RL in the final eval.
+- PS-only is slightly best on HPSv2.
+- IR+PS almost ties PS-only on HPSv2 and is best on ImageReward/PickScore balance.
+- IR+PS has the highest prompt-group accessible information.
+
+### 16. How to Get More Information
 
 Three directions:
 
@@ -208,7 +251,7 @@ The final point:
 
 > As models get stronger, humans alone cannot keep supplying enough frontier tasks. We need AI-generated tasks and self-iteration.
 
-### 15. Takeaway
+### 17. Takeaway
 
 Close with:
 
@@ -245,6 +288,10 @@ Key supporting figures:
 - `directed_edges.png`: directed transfer edges.
 - `sparse_action_entropy_per_token_heatmap.png`: action entropy shrinkage.
 - `seed_geometry_sharpness_embedding.png`: prompt geometry visualization.
+- `diffusion_final_image_grid.png`: SDXL DDPO final samples for No-RL, IR-only, PS-only, and IR+PS.
+- `diffusion_cross_reward_matrix_final_z.png`: final cross-reward matrix for the diffusion DDPO experiment.
+- `diffusion_final_active_channel_information.png`: prompt-group entropy, reward separation, and accessible information for active training channels.
+- `diffusion_active_iacc_vs_hpsv2.png`: active-channel accessible information versus held-out HPSv2.
 
 ## Suggested 8-Minute Timing
 
@@ -252,6 +299,6 @@ Key supporting figures:
 - Slides 4-6: 2 min
 - Slides 7-9: 1.5 min
 - Slides 10-13: 2 min
-- Slides 14-16: 1 min
+- Slides 14-17: 1.5 min
 
-For a shorter 5-minute version, skip slides 9, 11, and 14.
+For a shorter 5-minute version, skip slides 9, 11, and 15.

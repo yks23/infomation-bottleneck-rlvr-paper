@@ -1569,51 +1569,40 @@
 
   <section class="slide compact">
     <div class="kicker">Diffusion extension</div>
-    <h2>Diffusion RL：从 0/1 verifier 到连续 reward 分布</h2>
-    <div class="grid cols-2">
+    <h2>Diffusion RL：同一个信息瓶颈，也能在图像里看到</h2>
+    <div class="image-row">
+      <div class="figure"><img src="assets/diffusion_final_image_grid.png" alt="SDXL DDPO final image grid"></div>
       <div class="card">
-        <h3>前面的数学 RLVR</h3>
-        <p>一道题 q_i，采样一条 rollout τ，再由 verifier 给出二值 reward。</p>
-        <div class="formula">q_i -> τ -> R_i ∈ {0,1}</div>
-        <p>所以平均信息量可以写成 binary reward variance。</p>
-        <div class="formula">I_i(t)=Var[R_i(t)]=p_i(t)(1-p_i(t))</div>
-      </div>
-      <div class="card">
-        <h3>Diffusion RL 的对应物</h3>
-        <p>一个 prompt c_i，采样图像 x，再由 reward model 给出连续 scalar score。</p>
+        <h3>SDXL + DDPO，10 个 prompt</h3>
+        <p>每个 prompt 采样图像，再由 reward model 给出连续分数。</p>
         <div class="formula">c_i -> x ~ π_t(.|c_i) -> R(c_i,x) ∈ R</div>
-        <p>因此要看同一 prompt 下 reward distribution 还有没有可区分的宽度。</p>
+        <p>这里不是 0/1 verifier，而是 ImageReward、PickScore、HPSv2 这样的 reward channel。</p>
+        <p>所以信息量看的是同一 prompt 下不同图像的 reward distribution 是否还有可区分宽度。</p>
         <div class="formula">I_i(t)=Var_x[R(c_i,x)]</div>
       </div>
     </div>
-    <p class="lead">Binary verifier 只是 Var[R] 的特例；在 diffusion 里，更自然的问题是 mean reward 是否上升、reward spread 是否变窄、high-reward tail 是否还存在。</p>
+    <p class="fig-note">四行分别是 No-RL、IR-only、PS-only、IR+PS；diffusion 版本把“题目”换成 prompt，把 rollout 换成生成图像/denoising trajectory。</p>
     <div class="footer"><span>Diffusion reward signal</span><span>14/17</span></div>
   </section>
 
   <section class="slide compact">
     <div class="kicker">Diffusion extension</div>
-    <h2>Diffusion 的信息信号：proxy bias 与 multi-reward disagreement</h2>
-    <div class="grid cols-3">
-      <div class="card">
-        <h3>Reward 不是 ground truth</h3>
-        <p>图像 reward model 更像 learned proxy，而不是数学 verifier。</p>
-        <div class="formula">R_proxy(c,x) ≠ R_human(c,x)</div>
-        <p>高 variance 可能是有用信号，也可能只是 reward hacking 空间。</p>
+    <h2>Diffusion 结果：多 reward 提供更宽的信息通道</h2>
+    <div class="figure-gallery three">
+      <div class="figure-card">
+        <div class="figure"><img src="assets/diffusion_cross_reward_matrix_final_z.png" alt="Diffusion final cross-reward matrix"></div>
+        <p class="fig-note">最终 cross-reward matrix：IR+PS 在 ImageReward 和 PickScore 上最好，HPSv2 基本追平 PS-only。</p>
       </div>
-      <div class="card">
-        <h3>多 reward 的冲突本身是信息</h3>
-        <p>图像质量通常不是单目标：美学、prompt alignment、人类偏好、多样性会互相拉扯。</p>
-        <div class="formula">r(c,x)=[R_aes,R_align,R_pref,...]</div>
-        <p>reward ranking 的 disagreement 可以揭示 tradeoff、bias 和可优化方向。</p>
+      <div class="figure-card">
+        <div class="figure"><img src="assets/diffusion_final_active_channel_information.png" alt="Diffusion active-channel information"></div>
+        <p class="fig-note">最终 prompt-group 信息量：IR+PS 的 accessible information 最高。</p>
       </div>
-      <div class="card">
-        <h3>Reward 之间可能低维耦合</h3>
-        <p>多个 reward 看似独立，但实际可能共享同一组视觉偏好或模型偏差。</p>
-        <div class="formula">Σ_R(c)=Cov_x[r(c,x)]</div>
-        <p>分析 covariance / effective rank 可以判断多 reward 是否真的提供了更多独立信息。</p>
+      <div class="figure-card">
+        <div class="figure"><img src="assets/diffusion_active_iacc_vs_hpsv2.png" alt="Diffusion accessible information vs held-out reward"></div>
+        <p class="fig-note">信息量和 held-out HPSv2 的关系：IR+PS 有更丰富反馈，同时接近最强单 reward。</p>
       </div>
     </div>
-    <p class="lead">Future todo：把 diffusion RL 也看成信息几何问题，分析 reward variance 从哪里来、proxy bias 有多大、多个 reward 是否冲突，以及多 reward 是否真的增加独立信号维度。</p>
+    <p class="lead">结论要谨慎说：multi-reward 没有严格赢过最强 single reward，但它给出最均衡的 reward profile，并让 active feedback information 最高。</p>
     <div class="footer"><span>Diffusion reward geometry</span><span>15/17</span></div>
   </section>
 

@@ -14,3 +14,4 @@ Main storyline:
 3. Multi-prompt datasets are approximately additive when prompt interactions are weak.
 4. Transfer measurements define a dataset geometry.
 5. Fixed-dataset RL shrinks a broad distribution into many prompt-level seeds.
+6. Diffusion DDPO shows the same information-channel view with continuous, multi-reward feedback.
