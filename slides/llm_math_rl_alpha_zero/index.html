@@ -204,6 +204,11 @@
       justify-content: center;
       margin-top: 20px;
     }
+    .connectfour-chart {
+      height: min(31vh, 280px);
+      margin-top: 18px;
+      padding: 8px;
+    }
     .cell {
       width: 34px;
       height: 34px;
@@ -1307,6 +1312,7 @@
     }
 
     @media print {
+      @page { size: 16in 9in; margin: 0; }
       body { overflow: visible; background: white; }
       .deck { height: auto; }
       .slide {
@@ -1336,45 +1342,45 @@
   <section class="slide active question-only">
     <h1>为什么学术界的大模型数学 RL 没有像 AlphaZero 那样轻易解决？</h1>
     <p class="presenters">汇报人：杨凯森，黄禹</p>
-    <div class="footer"><span>Class presentation draft</span><span>1</span></div>
+    <div class="footer"><span>Class presentation draft</span><span>1/17</span></div>
   </section>
 
   <section class="slide guess-slide">
-    <div class="kicker">Two tempting explanations</div>
-    <h2>两个看起来很合理的猜测</h2>
+    <div class="kicker">Tempting explanation 1</div>
+    <h2>猜测一：是不是因为状态 / 动作空间太大？</h2>
     <div class="grid cols-2">
       <div class="card">
-        <h3>猜测 1：状态 / 动作空间太大？</h3>
+        <h3>这个猜测很自然</h3>
         <p>围棋只有 361 个格子，而大模型词表可以有 16 万 token。</p>
         <p>是不是因为搜索空间太大，所以 RL 很难像 AlphaZero 那样迭代？</p>
       </div>
       <div class="card">
-        <h3>猜测 2：合法性约束太弱？</h3>
-        <p>围棋每一步几乎都是合法落子。</p>
-        <p>而语言模型会写出很多非法表达、无意义推导、格式错误答案。</p>
-      </div>
-    </div>
-    <div class="footer"><span>Motivation</span><span>2</span></div>
-  </section>
-
-  <section class="slide">
-    <div class="kicker">Why these are probably not the core</div>
-    <h2>这两个猜测都可以被工程化地压低</h2>
-    <div class="grid cols-2">
-      <div class="card">
-        <h3>词表维度可以收缩</h3>
+        <h3>但动作集合可以工程化收缩</h3>
         <p>模型词表可以很大，但数学推理真正需要活跃保留的符号集合小得多。</p>
         <p>如果只考虑数学符号和推理格式，几百个 token 量级就能覆盖相当多场景。</p>
         <div class="formula">160k tokens -> ~300 math tokens</div>
       </div>
+    </div>
+    <div class="footer"><span>Motivation</span><span>2/17</span></div>
+  </section>
+
+  <section class="slide guess-slide">
+    <div class="kicker">Tempting explanation 2</div>
+    <h2>猜测二：是不是因为合法性约束太弱？</h2>
+    <div class="grid cols-2">
       <div class="card">
-        <h3>合法性可以交给编译器</h3>
+        <h3>这个猜测也很自然</h3>
+        <p>围棋每一步几乎都是合法落子。</p>
+        <p>而语言模型会写出很多非法表达、无意义推导、格式错误答案。</p>
+      </div>
+      <div class="card">
+        <h3>但合法性可以交给编译器</h3>
         <p>可以接入 Lean / parser / 类型检查器，在生成过程中做静态检查。</p>
         <p>这样模型不一定能写出正确证明，但至少可以被限制在合法表达附近。</p>
         <div class="formula">LM + compiler feedback</div>
       </div>
     </div>
-    <div class="footer"><span>Engineering is not enough</span><span>3</span></div>
+    <div class="footer"><span>Engineering is not enough</span><span>3/17</span></div>
   </section>
 
   <section class="slide">
@@ -1390,7 +1396,7 @@
         <p>左图展示的是每个 source prompt 已实现的信息积分与理论上限。</p>
       </div>
     </div>
-    <div class="footer"><span>Claim</span><span>4</span></div>
+    <div class="footer"><span>Claim</span><span>4/17</span></div>
   </section>
 
   <section class="slide compact">
@@ -1423,7 +1429,7 @@
       </div>
     </div>
     <p class="lead">如果 p_i(t) 接近 0 或 1，rollout reward 几乎不再有差异，I_i(t) 接近 0；只有 p_i(t) 接近 1/2 时，每次 rollout 的平均信息量最大。</p>
-    <div class="footer"><span>Metric</span><span>5</span></div>
+    <div class="footer"><span>Metric</span><span>5/17</span></div>
   </section>
 
   <section class="slide">
@@ -1447,19 +1453,14 @@
         <h3>Connect Four 作为例子</h3>
         <p>自博弈里双方实力接近时，结果基本是一半正样本、一半负样本。</p>
         <div class="formula">p(win)≈1/2, I_t=V[R_t]≈1/4</div>
-        <p>也就是说，每一步 rollout 的平均信息量几乎保持最大。</p>
-        <div class="axis">
-          <div class="line"></div>
-          <div class="curve">
-            <svg viewBox="0 0 400 150" preserveAspectRatio="none">
-              <path d="M0 75 C80 72, 120 77, 200 74 S330 76, 400 73" fill="none" stroke="#2f6384" stroke-width="7" stroke-linecap="round"/>
-            </svg>
-          </div>
+        <p>实验里 self-play 相比固定对手更稳，弱对手胜率也更高。</p>
+        <div class="figure connectfour-chart">
+          <img src="assets/openspiel_c4_mean_win_rate_by_condition.png" alt="Connect Four mean win rate by training condition">
         </div>
-        <p class="caption">示意：self-play 持续制造边界状态，reward variance 不会像固定题集那样自然清零。</p>
+        <p class="caption">Connect Four：self-play、固定随机对手、固定 weak-MCTS 对手的平均胜率对比。</p>
       </div>
     </div>
-    <div class="footer"><span>Classic RL</span><span>6</span></div>
+    <div class="footer"><span>Classic RL</span><span>6/17</span></div>
   </section>
 
   <section class="slide">
@@ -1469,7 +1470,7 @@
       <img src="assets/completed_problem_H_p_subplots_top50.png" alt="DAPO-17k completed single-question sweeps">
     </div>
     <p class="fig-note">DAPO-17k completed single-question sweeps top-50：每个小图都是“只训练这一道题”的独立实验；蓝线是 H(p)，橙虚线是 p。p 接近 1 后，信息量迅速回到 0。</p>
-    <div class="footer"><span>Single prompt</span><span>7</span></div>
+    <div class="footer"><span>Single prompt</span><span>7/17</span></div>
   </section>
 
   <section class="slide">
@@ -1479,7 +1480,7 @@
       <img src="assets/dapo17k_p_H_top30_multitask.png" alt="DAPO-17k pass rate and information trajectories">
     </div>
     <p class="fig-note">DAPO-17k sweep 前 30 个题目：上半部分是每题 pass-rate p 的轨迹，下半部分是同一批题的信息量 H / variance 轨迹。多题数据集更像若干有限预算的叠加。</p>
-    <div class="footer"><span>Per-prompt dynamics</span><span>10</span></div>
+    <div class="footer"><span>Per-prompt dynamics</span><span>8/17</span></div>
   </section>
 
   <section class="slide">
@@ -1490,7 +1491,7 @@
       <div class="figure"><img src="assets/additivity_summary_bars.png" alt="additivity summary"></div>
     </div>
     <p class="lead">如果题目之间相互作用弱，那么增加题数可以增加总信息量；但总上限仍然随固定题集规模受限。</p>
-    <div class="footer"><span>Additivity</span><span>10</span></div>
+    <div class="footer"><span>Additivity</span><span>9/17</span></div>
   </section>
 
   <section class="slide">
@@ -1507,7 +1508,7 @@
         <p>这给出一个近似无向的题目距离空间。</p>
       </div>
     </div>
-    <div class="footer"><span>Distance from vectors</span><span>11</span></div>
+    <div class="footer"><span>Distance from vectors</span><span>10/17</span></div>
   </section>
 
   <section class="slide">
@@ -1528,7 +1529,7 @@
       </div>
     </div>
     <p class="lead">核心量很简单：R_ij = p_ij / p_ii。它天然是有方向的；如果一定要对称距离，可以再把 R_ij 和 R_ji 合并。</p>
-    <div class="footer"><span>Normalized transfer</span><span>12</span></div>
+    <div class="footer"><span>Normalized transfer</span><span>11/17</span></div>
   </section>
 
   <section class="slide">
@@ -1539,7 +1540,7 @@
       <div class="figure"><img src="assets/seed_geometry_sharpness_embedding.png" alt="seed geometry sharpness embedding"></div>
     </div>
     <p class="lead">左边看收缩，右边看题目在 transfer space 中的位置。几何关系告诉我们哪些题可以互相带动。</p>
-    <div class="footer"><span>Dataset geometry</span><span>13</span></div>
+    <div class="footer"><span>Dataset geometry</span><span>12/17</span></div>
   </section>
 
   <section class="slide">
@@ -1563,7 +1564,57 @@
         <p>这些籽之间的距离，就是刚才由 transfer 定义出的数据集几何。</p>
       </div>
     </div>
-    <div class="footer"><span>Shrinkage metaphor</span><span>14</span></div>
+    <div class="footer"><span>Shrinkage metaphor</span><span>13/17</span></div>
+  </section>
+
+  <section class="slide compact">
+    <div class="kicker">Diffusion extension</div>
+    <h2>Diffusion RL：从 0/1 verifier 到连续 reward 分布</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>前面的数学 RLVR</h3>
+        <p>一道题 q_i，采样一条 rollout τ，再由 verifier 给出二值 reward。</p>
+        <div class="formula">q_i -> τ -> R_i ∈ {0,1}</div>
+        <p>所以平均信息量可以写成 binary reward variance。</p>
+        <div class="formula">I_i(t)=Var[R_i(t)]=p_i(t)(1-p_i(t))</div>
+      </div>
+      <div class="card">
+        <h3>Diffusion RL 的对应物</h3>
+        <p>一个 prompt c_i，采样图像 x，再由 reward model 给出连续 scalar score。</p>
+        <div class="formula">c_i -> x ~ π_t(.|c_i) -> R(c_i,x) ∈ R</div>
+        <p>因此要看同一 prompt 下 reward distribution 还有没有可区分的宽度。</p>
+        <div class="formula">I_i(t)=Var_x[R(c_i,x)]</div>
+      </div>
+    </div>
+    <p class="lead">Binary verifier 只是 Var[R] 的特例；在 diffusion 里，更自然的问题是 mean reward 是否上升、reward spread 是否变窄、high-reward tail 是否还存在。</p>
+    <div class="footer"><span>Diffusion reward signal</span><span>14/17</span></div>
+  </section>
+
+  <section class="slide compact">
+    <div class="kicker">Diffusion extension</div>
+    <h2>Diffusion 的信息信号：proxy bias 与 multi-reward disagreement</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>Reward 不是 ground truth</h3>
+        <p>图像 reward model 更像 learned proxy，而不是数学 verifier。</p>
+        <div class="formula">R_proxy(c,x) ≠ R_human(c,x)</div>
+        <p>高 variance 可能是有用信号，也可能只是 reward hacking 空间。</p>
+      </div>
+      <div class="card">
+        <h3>多 reward 的冲突本身是信息</h3>
+        <p>图像质量通常不是单目标：美学、prompt alignment、人类偏好、多样性会互相拉扯。</p>
+        <div class="formula">r(c,x)=[R_aes,R_align,R_pref,...]</div>
+        <p>reward ranking 的 disagreement 可以揭示 tradeoff、bias 和可优化方向。</p>
+      </div>
+      <div class="card">
+        <h3>Reward 之间可能低维耦合</h3>
+        <p>多个 reward 看似独立，但实际可能共享同一组视觉偏好或模型偏差。</p>
+        <div class="formula">Σ_R(c)=Cov_x[r(c,x)]</div>
+        <p>分析 covariance / effective rank 可以判断多 reward 是否真的提供了更多独立信息。</p>
+      </div>
+    </div>
+    <p class="lead">Future todo：把 diffusion RL 也看成信息几何问题，分析 reward variance 从哪里来、proxy bias 有多大、多个 reward 是否冲突，以及多 reward 是否真的增加独立信号维度。</p>
+    <div class="footer"><span>Diffusion reward geometry</span><span>15/17</span></div>
   </section>
 
   <section class="slide">
@@ -1584,7 +1635,7 @@
       </div>
     </div>
     <p class="lead">也就是说，未来真正需要的是会自我生成任务、验证任务、更新任务分布的系统。</p>
-    <div class="footer"><span>Beyond fixed datasets</span><span>15</span></div>
+    <div class="footer"><span>Beyond fixed datasets</span><span>16/17</span></div>
   </section>
 
   <section class="slide">
@@ -1597,7 +1648,7 @@
       <div class="card"><h3>Geometric</h3><p>题目之间的 transfer 可以定义 prompt space geometry。</p></div>
     </div>
     <p class="lead">谢谢大家。</p>
-    <div class="footer"><span>End</span><span>16</span></div>
+    <div class="footer"><span>End</span><span>17/17</span></div>
   </section>
 </main>
 <div class="progress" id="progress"></div>
